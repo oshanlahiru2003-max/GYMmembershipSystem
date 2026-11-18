@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Portal - My Gym</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .nav-scrollbar::-webkit-scrollbar { height: 4px; }
+        .nav-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .nav-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <nav class="bg-[#1e293b] text-white px-4 py-3 flex items-center justify-between shadow-md sticky top-0 z-50">
+        <div class="flex items-center gap-6 overflow-x-auto nav-scrollbar whitespace-nowrap pb-1 md:pb-0 w-full">
+            <a href="#" class="flex items-center text-lg font-bold tracking-wide mr-2 flex-shrink-0">
+                <i class="fa-solid fa-dumbbell mr-2 text-gray-100"></i> My.Gym
+            </a>
+            <div class="flex items-center gap-1 text-[13px] font-medium text-gray-300">
+                <button onclick="showMemberSection('memberDashboardSection')" class="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-white/10 text-white transition"><i class="fa-solid fa-circle-check"></i> Dashboard</button>
+                <button onclick="showMemberSection('memberProfileSection')" class="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-white/10 hover:text-white transition"><i class="fa-regular fa-id-badge"></i> My Profile</button>
+                <button onclick="showMemberSection('memberMembershipSection'); fetchMyMembership();" class="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-white/10 hover:text-white transition"><i class="fa-solid fa-crown"></i> Membership</button>
+                <button onclick="showMemberSection('memberAttendanceSection'); fetchMyAttendance();" class="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-white/10 hover:text-white transition"><i class="fa-regular fa-calendar-check"></i> Attendance</button>
+                <button onclick="showMemberSection('memberPaymentsSection')" class="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-white/10 hover:text-white transition"><i class="fa-regular fa-credit-card"></i> Payments</button>
+                <button onclick="showMemberSection('memberWorkoutSection')" class="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-white/10 hover:text-white transition"><i class="fa-solid fa-dumbbell"></i> Workout Plans</button>
+                <button onclick="showMemberSection('memberFeedbackSection')" class="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-white/10 hover:text-white transition"><i class="fa-regular fa-comment-dots"></i> Feedback</button>
+            </div>
+        </div>
+        <div class="ml-4 flex-shrink-0">
+            <a href="landing.html" id="logoutBtn" class="flex items-center gap-2 bg-[#0f172a] hover:bg-red-500 text-white text-[13px] font-semibold px-4 py-1.5 rounded border border-gray-700 hover:border-red-500 transition">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+            </a>
+        </div>
+    </nav>
+
+    <main class="flex-grow p-4 lg:p-8 overflow-y-auto">
+        <div class="bg-white rounded-[30px] shadow-sm border border-gray-100 p-6 lg:p-8 max-w-[1400px] mx-auto min-h-[70vh]">
+            
+            <div id="memberDashboardSection" class="member-page-section block">
+                <div class="bg-gradient-to-r from-[#6366f1] via-[#a855f7] to-[#f43f5e] rounded-2xl p-8 flex flex-col md:flex-row justify-between items-start md:items-center text-white shadow-md">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider mb-1 opacity-90">MEMBER DASHBOARD</p>
+                        <h1 class="text-4xl font-bold mb-2">Welcome, <span id="welcome_name">Loading...</span></h1>
+                        <p class="text-sm opacity-90 font-medium">Track your attendance, payments, membership, and workout plans in one place.</p>
+                    </div>
+                    <div class="mt-6 md:mt-0 flex gap-3 items-center">
+                        <span class="bg-white/20 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2"><i class="fa-solid fa-user-check text-[12px]"></i> <span id="dash_username_badge">...</span></span>
+                        <button onclick="showMemberSection('memberProfileSection')" class="bg-white text-gray-900 font-bold py-2.5 px-6 rounded-full text-sm shadow-sm hover:bg-gray-100 transition flex items-center gap-2">
+                            <i class="fa-solid fa-user text-gray-600"></i> My Profile
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                    <div class="bg-[#0284c7] text-white p-6 rounded-2xl relative overflow-hidden shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="absolute top-5 right-5 bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center text-lg"><i class="fa-regular fa-calendar-check"></i></div>
+                            <h3 class="text-sm font-medium opacity-90">Total Attendance</h3>
+                            <p class="text-5xl font-bold my-2" id="stat_attendance">0</p>
+                            <div class="text-xs opacity-90 mb-5 flex items-center gap-1.5"><i class="fa-solid fa-lock text-[10px]"></i> Check-in history</div>
+                        </div>
+                        <button onclick="showMemberSection('memberAttendanceSection'); fetchMyAttendance();" class="bg-white text-[#0284c7] text-xs font-bold px-4 py-2 rounded-full flex items-center justify-center gap-1.5 hover:bg-gray-50 transition w-max">
+                            <i class="fa-solid fa-arrow-right"></i> View Attendance
+                        </button>
+                    </div>
+                    <div class="bg-[#16a34a] text-white p-6 rounded-2xl relative overflow-hidden shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="absolute top-5 right-5 bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center text-lg"><i class="fa-regular fa-credit-card"></i></div>
+                            <h3 class="text-sm font-medium opacity-90">Total Payments</h3>
+                            <p class="text-5xl font-bold my-2" id="stat_payments">0</p>
+                            <div class="text-xs opacity-90 mb-5 flex items-center gap-1.5"><i class="fa-solid fa-file-invoice text-[10px]"></i> Payment records</div>
+                        </div>
+                        <button onclick="showMemberSection('memberPaymentsSection')" class="bg-white text-[#16a34a] text-xs font-bold px-4 py-2 rounded-full flex items-center justify-center gap-1.5 hover:bg-gray-50 transition w-max">
+                            <i class="fa-solid fa-arrow-right"></i> View Payments
+                        </button>
+                    </div>
+                    <div class="bg-[#ea580c] text-white p-6 rounded-2xl relative overflow-hidden shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="absolute top-5 right-5 bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-dumbbell"></i></div>
+                            <h3 class="text-sm font-medium opacity-90">Workout Plans</h3>
+                            <p class="text-5xl font-bold my-2" id="stat_workouts">0</p>
+                            <div class="text-xs opacity-90 mb-5 flex items-center gap-1.5"><i class="fa-solid fa-clipboard-list text-[10px]"></i> Plans assigned</div>
+                        </div>
+                        <button onclick="showMemberSection('memberWorkoutSection')" class="bg-white text-[#ea580c] text-xs font-bold px-4 py-2 rounded-full flex items-center justify-center gap-1.5 hover:bg-gray-50 transition w-max">
+                            <i class="fa-solid fa-arrow-right"></i> View Plans
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-10">
+                    <div class="flex justify-between items-center mb-5">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2"><i class="fa-solid fa-bolt text-gray-500"></i> Quick Actions</h3>
+                        <span class="text-xs text-gray-400">Open your common pages quickly.</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div onclick="showMemberSection('memberMembershipSection'); fetchMyMembership();" class="bg-gray-50/50 border border-gray-100 shadow-sm p-4 rounded-2xl flex items-center cursor-pointer hover:border-gray-200 transition group">
+                            <div class="bg-white border w-12 h-12 rounded-xl flex items-center justify-center text-gray-500 mr-4"><i class="fa-solid fa-crown text-lg"></i></div>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-bold text-gray-800">My Membership</h4>
+                                <p class="text-xs text-gray-500">Plan, dates, remaining</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-gray-300 text-xs"></i>
+                        </div>
+                        <div onclick="showMemberSection('memberProfileSection')" class="bg-gray-50/50 border border-gray-100 shadow-sm p-4 rounded-2xl flex items-center cursor-pointer hover:border-gray-200 transition group">
+                            <div class="bg-white border w-12 h-12 rounded-xl flex items-center justify-center text-gray-500 mr-4"><i class="fa-regular fa-address-card text-lg"></i></div>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-bold text-gray-800">My Profile</h4>
+                                <p class="text-xs text-gray-500">Personal details</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-gray-300 text-xs"></i>
+                        </div>
+                        <div onclick="showMemberSection('memberFeedbackSection')" class="bg-gray-50/50 border border-gray-100 shadow-sm p-4 rounded-2xl flex items-center cursor-pointer hover:border-gray-200 transition group">
+                            <div class="bg-white border w-12 h-12 rounded-xl flex items-center justify-center text-gray-500 mr-4"><i class="fa-regular fa-comment-dots text-lg"></i></div>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-bold text-gray-800">Feedback</h4>
+                                <p class="text-xs text-gray-500">Suggestions & support</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-gray-300 text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="memberProfileSection" class="member-page-section hidden">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-gray-100 pb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-regular fa-address-card text-gray-600"></i> My Profile</h2>
+                        <p class="text-sm text-gray-500 mt-1">View and manage your personal details.</p>
+                    </div>
+                    <div class="mt-4 md:mt-0 flex gap-3">
+                        <button onclick="showMemberSection('memberEditProfileSection')" class="bg-[#1e293b] text-white font-semibold py-2 px-5 rounded-full text-sm shadow-sm flex items-center gap-2 transition hover:bg-gray-900">
+                            <i class="fa-solid fa-user-pen"></i> Edit Profile
+                        </button>
+                        <button onclick="showMemberSection('memberChangePasswordSection')" class="bg-white border border-gray-300 text-gray-700 font-semibold py-2 px-5 rounded-full text-sm shadow-sm flex items-center gap-2 hover:bg-gray-50 transition">
+                            <i class="fa-solid fa-key"></i> Change Password
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-gray-50 border border-gray-100 rounded-2xl p-6 shadow-sm">
+                        <div class="flex items-center gap-4 mb-6 pb-6 border-b border-gray-200">
+                            <div class="bg-[#e0f2fe] w-16 h-16 rounded-xl flex items-center justify-center text-[#0284c7] text-2xl"><i class="fa-solid fa-user"></i></div>
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900" id="prof_name">Loading...</h3>
+                                <span class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded flex items-center w-max mt-1 gap-1"><i class="fa-solid fa-id-badge"></i> <span id="prof_username"></span></span>
+                            </div>
+                        </div>
+                        <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-1.5"><i class="fa-solid fa-circle-info"></i> Quick Info</div>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center"><div class="text-sm text-gray-500 flex items-center gap-2"><i class="fa-solid fa-phone w-4"></i> Mobile</div><div class="text-sm font-semibold text-gray-800" id="prof_mobile_quick"></div></div>
+                            <div class="flex justify-between items-center"><div class="text-sm text-gray-500 flex items-center gap-2"><i class="fa-solid fa-hashtag w-4"></i> Age</div><div class="text-sm font-semibold text-gray-800" id="prof_age_quick"></div></div>
+                            <div class="flex justify-between items-center"><div class="text-sm text-gray-500 flex items-center gap-2"><i class="fa-solid fa-venus-mars w-4"></i> Gender</div><div class="text-sm font-semibold text-gray-800" id="prof_gender_quick"></div></div>
+                            <div class="flex justify-between items-center"><div class="text-sm text-gray-500 flex items-center gap-2"><i class="fa-regular fa-calendar w-4"></i> Join Date</div><div class="text-sm font-semibold text-gray-800" id="prof_join_quick"></div></div>
+                        </div>
+                        <div class="mt-8 pt-6 border-t border-gray-200 text-xs text-gray-500 flex items-center gap-2">
+                            <i class="fa-solid fa-shield-halved"></i> Keep your profile updated for smooth membership tracking.
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <div class="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                            <div class="bg-[#0f172a] text-white px-5 py-4 text-sm font-bold flex items-center gap-2">
+                                <i class="fa-solid fa-list-ul"></i> Profile Details
+                            </div>
+                            <table class="w-full text-left border-collapse bg-white">
+                                <tbody class="text-sm text-gray-700">
+                                    <tr class="border-b border-gray-100"><td class="p-4 font-bold w-1/3 bg-gray-50/50">Full Name</td><td class="p-4" id="table_fullname"></td></tr>
+                                    <tr class="border-b border-gray-100"><td class="p-4 font-bold w-1/3 bg-gray-50/50">Username</td><td class="p-4" id="table_username"></td></tr>
+                                    <tr class="border-b border-gray-100"><td class="p-4 font-bold w-1/3 bg-gray-50/50">Mobile</td><td class="p-4" id="table_mobile"></td></tr>
+                                    <tr class="border-b border-gray-100"><td class="p-4 font-bold w-1/3 bg-gray-50/50">Age</td><td class="p-4" id="table_age"></td></tr>
+                                    <tr class="border-b border-gray-100"><td class="p-4 font-bold w-1/3 bg-gray-50/50">Gender</td><td class="p-4" id="table_gender"></td></tr>
+                                    <tr class="border-b border-gray-100"><td class="p-4 font-bold w-1/3 bg-gray-50/50">Address</td><td class="p-4" id="table_address"></td></tr>
+                                    <tr><td class="p-4 font-bold w-1/3 bg-gray-50/50">Join Date</td><td class="p-4" id="table_join_date"></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="memberEditProfileSection" class="member-page-section hidden">
+                <div class="flex justify-between items-center mb-8 border-b border-gray-100 pb-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-user-pen text-gray-600"></i> Edit Profile</h2>
+                        <p class="text-sm text-gray-500 mt-1">Update your personal information and contact details.</p>
+                    </div>
+                    <button onclick="showMemberSection('memberProfileSection')" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-5 rounded-full text-sm shadow-sm transition flex items-center gap-2 hover:bg-gray-50">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Profile
+                    </button>
+                </div>
+                
+                <form id="editMyProfileForm" class="max-w-3xl bg-gray-50/50 p-6 rounded-2xl border border-gray-100 shadow-sm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Full Name</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-user absolute left-4 top-3.5 text-gray-400"></i>
+                                <input type="text" id="edit_full_name" class="w-full border border-gray-300 rounded-xl pl-10 pr-3 py-2.5 outline-none text-sm focus:border-gray-500" required>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Mobile</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-phone absolute left-4 top-3.5 text-gray-400"></i>
+                                <input type="text" id="edit_mobile" class="w-full border border-gray-300 rounded-xl pl-10 pr-3 py-2.5 outline-none text-sm focus:border-gray-500" required>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Age</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-hashtag absolute left-4 top-3.5 text-gray-400"></i>
+                                <input type="number" id="edit_age" class="w-full border border-gray-300 rounded-xl pl-10 pr-3 py-2.5 outline-none text-sm focus:border-gray-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Gender</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-venus-mars absolute left-4 top-3.5 text-gray-400"></i>
+                                <select id="edit_gender" class="w-full border border-gray-300 rounded-xl pl-10 pr-3 py-2.5 outline-none text-sm focus:border-gray-500 bg-white">
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-8">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Address</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-location-dot absolute left-4 top-4 text-gray-400"></i>
+                            <textarea id="edit_address" rows="3" class="w-full border border-gray-300 rounded-xl pl-10 pr-3 py-3 outline-none text-sm focus:border-gray-500"></textarea>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button type="submit" class="bg-[#1e293b] hover:bg-gray-900 text-white font-bold py-2.5 px-6 rounded-xl text-sm shadow-sm transition flex items-center gap-2">
+                            <i class="fa-regular fa-floppy-disk"></i> Save Changes
+                        </button>
+                        <button type="button" onclick="showMemberSection('memberProfileSection')" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold py-2.5 px-5 rounded-xl text-sm shadow-sm transition flex items-center gap-2">
+                            <i class="fa-solid fa-xmark"></i> Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="memberChangePasswordSection" class="member-page-section hidden">
+                <div class="flex justify-between items-center mb-8 border-b border-gray-100 pb-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-lock text-gray-600"></i> Change Password</h2>
+                        <p class="text-sm text-gray-500 mt-1">Ensure your account is using a long, random password to stay secure.</p>
+                    </div>
+                    <button onclick="showMemberSection('memberProfileSection')" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-5 rounded-full text-sm shadow-sm transition flex items-center gap-2 hover:bg-gray-50">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Profile
+                    </button>
+                </div>
+                
+                <form id="changePasswordForm" class="max-w-xl bg-gray-50/50 p-6 rounded-2xl border border-gray-100 shadow-sm">
+                    <div class="mb-5">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Current Password</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-unlock-keyhole absolute left-4 top-3.5 text-gray-400"></i>
+                            <input type="password" id="cp_current" class="w-full border border-gray-300 rounded-xl pl-10 pr-3 py-2.5 outline-none text-sm focus:border-gray-500" placeholder="••••••••" required>
+                        </div>
+                    </div>
+                    <div class="mb-5">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">New Password</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-key absolute left-4 top-3.5 text-gray-400"></i>
+                            <input type="password" id="cp_new" class="w-full border border-gray-300 rounded-xl pl-10 pr-3 py-2.5 outline-none text-sm focus:border-gray-500" placeholder="••••••••" required>
+                        </div>
+                    </div>
+                    <div class="mb-8">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Confirm New Password</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-shield-check absolute left-4 top-3.5 text-gray-400"></i>
+                            <input type="password" id="cp_confirm" class="w-full border border-gray-300 rounded-xl pl-10 pr-3 py-2.5 outline-none text-sm focus:border-gray-500" placeholder="••••••••" required>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button type="submit" class="bg-[#1e293b] hover:bg-gray-900 text-white font-bold py-2.5 px-6 rounded-xl text-sm shadow-sm transition flex items-center gap-2">
+                            <i class="fa-solid fa-lock"></i> Update Password
+                        </button>
+                        <button type="button" onclick="showMemberSection('memberProfileSection')" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold py-2.5 px-5 rounded-xl text-sm shadow-sm transition flex items-center gap-2">
+                            <i class="fa-solid fa-xmark"></i> Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="memberMembershipSection" class="member-page-section hidden">
+                <div class="mb-8 border-b border-gray-100 pb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-crown text-gray-600"></i> My Membership</h2>
+                    <p class="text-sm text-gray-500 mt-1">View your current plan, validity, and payment status.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 mb-1">Plan</p>
+                            <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2" id="mem_plan_name"><i class="fa-solid fa-crown text-gray-700"></i> Loading..</h3>
+                            <p class="text-xs text-gray-500 mt-1" id="mem_duration_badge">Duration: -</p>
+                        </div>
+                        <div class="bg-emerald-50 text-emerald-500 w-12 h-12 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-id-badge"></i></div>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 mb-1">Days Remaining</p>
+                            <h3 class="text-xl font-bold text-gray-900 mb-1" id="mem_days_remaining">- day(s)</h3>
+                            <span class="bg-emerald-500 text-white px-2 py-0.5 rounded text-[10px] font-bold" id="mem_status_badge"><i class="fa-solid fa-circle-check"></i> Active</span>
+                        </div>
+                        <div class="bg-blue-50 text-blue-500 w-12 h-12 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-hourglass-half"></i></div>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 mb-1">Remaining Amount</p>
+                            <h3 class="text-xl font-bold text-gray-900 mb-1" id="mem_remaining_amt">Rs. 0.0</h3>
+                            <span class="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] font-bold" id="mem_paid_badge">Paid: Rs. 0</span>
+                        </div>
+                        <div class="bg-rose-50 text-rose-500 w-12 h-12 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-wallet"></i></div>
+                    </div>
+                </div>
+
+                <div class="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                    <div class="bg-[#0f172a] text-white px-5 py-4 text-sm font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info"></i> Membership Details
+                    </div>
+                    <table class="w-full text-left border-collapse bg-white">
+                        <tbody class="text-sm text-gray-700" id="membershipTableBody">
+                            <tr><td colspan="2" class="p-5 text-center text-gray-500">Loading plan details...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="memberPaymentsSection" class="member-page-section hidden">
+                <div class="mb-8 border-b border-gray-100 pb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-regular fa-credit-card text-gray-600"></i> My Payment History</h2>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-gray-200">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-50 border-b border-gray-200 text-sm font-bold text-gray-800"><tr><th class="p-4">Date</th><th class="p-4">Amount</th><th class="p-4 text-right">Status</th></tr></thead>
+                        <tbody id="myPaymentsBody" class="text-sm text-gray-700 bg-white"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="memberAttendanceSection" class="member-page-section hidden">
+                <div class="mb-8 border-b border-gray-100 pb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-regular fa-calendar-check text-gray-600"></i> My Attendance</h2>
+                    <p class="text-sm text-gray-500 mt-1">Your daily check-ins and time-in history.</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-50 border-b border-gray-200 text-sm font-bold text-gray-800">
+                            <tr><th class="p-5 w-16">#</th><th class="p-5">Date</th><th class="p-5">Time In</th></tr>
+                        </thead>
+                        <tbody id="myAttendanceBody" class="text-sm text-gray-700 bg-white"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="memberWorkoutSection" class="member-page-section hidden">
+                <div class="mb-8 border-b border-gray-100 pb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-dumbbell text-gray-600"></i> My Workout Plans</h2>
+                </div>
+                <div id="myWorkoutsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            </div>
+
+            <div id="memberFeedbackSection" class="member-page-section hidden">
+                <div class="mb-8 border-b border-gray-100 pb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-regular fa-comment-dots text-gray-600"></i> Send Feedback</h2>
+                </div>
+                <form id="sendFeedbackForm" class="max-w-2xl">
+                    <div class="mb-6"><textarea id="feedback_message" rows="5" class="w-full border border-gray-300 rounded-xl p-4 outline-none focus:border-gray-500 transition text-sm shadow-sm" placeholder="Write your feedback here..." required></textarea></div>
+                    <button type="submit" class="bg-[#1e293b] hover:bg-gray-900 text-white font-bold py-3 px-8 rounded-xl transition shadow-sm">Submit Feedback</button>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // JWT is checked by the server, not by localStorage role alone.
+        async function apiFetch(input, options = {}) {
+            const token = localStorage.getItem('gym_token');
+            const headers = new Headers(options.headers || {});
+            if (token) headers.set('Authorization', `Bearer ${token}`);
+            const response = await fetch(input, { ...options, headers });
+            if (response.status === 401) {
+                localStorage.removeItem('gym_token');
+                localStorage.removeItem('gym_role');
+                localStorage.removeItem('gym_member_id');
+                window.location.replace('landing.html');
+                throw new Error('Your session expired. Please sign in again.');
+            }
+            return response;
+        }
+
+        // ==========================================
+        // AUTHENTICATION & LOGIN CHECK (NEW LOGIC)
+        // ==========================================
+        const MY_MEMBER_ID = localStorage.getItem('gym_member_id');
+        const role = localStorage.getItem('gym_role');
+
+        // සාමාජිකයෙක් ලොග් වී නොමැති නම් නැවත ලොගින් පිටුවට යැවීම
+        if (!localStorage.getItem('gym_token') || !MY_MEMBER_ID || role !== 'member') {
+            window.location.href = 'landing.html';
+        }
+
+        // Logout කිරීමේ Button එක සඳහා 
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = 'index.html';
+        });
+
+        // ==========================================
+        // UI Navigation
+        // ==========================================
+        function showMemberSection(sectionId) {
+            document.querySelectorAll('.member-page-section').forEach(sec => { sec.classList.add('hidden'); sec.classList.remove('block'); });
+            document.getElementById(sectionId).classList.remove('hidden'); document.getElementById(sectionId).classList.add('block');
+        }
+
+        // ==========================================
+        // FETCH DATA & POPULATE UI
+        // ==========================================
+        async function fetchMyData() {
+            try {
+                // Profile Fetch
+                const profRes = await apiFetch(`http://localhost:5000/api/members/${MY_MEMBER_ID}`);
+                if(!profRes.ok) return;
+                const profile = await profRes.json();
+                
+                document.getElementById('welcome_name').innerText = profile.full_name;
+                document.getElementById('dash_username_badge').innerText = profile.username;
+                
+                document.getElementById('prof_name').innerText = profile.full_name;
+                document.getElementById('prof_username').innerText = profile.username;
+                document.getElementById('prof_mobile_quick').innerText = profile.mobile;
+                document.getElementById('prof_age_quick').innerText = profile.age || '-';
+                document.getElementById('prof_gender_quick').innerText = profile.gender;
+                const jDate = new Date(profile.join_date).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
+                document.getElementById('prof_join_quick').innerText = jDate;
+
+                document.getElementById('table_fullname').innerText = profile.full_name;
+                document.getElementById('table_username').innerText = profile.username;
+                document.getElementById('table_mobile').innerText = profile.mobile;
+                document.getElementById('table_age').innerText = profile.age || '-';
+                document.getElementById('table_gender').innerText = profile.gender;
+                document.getElementById('table_address').innerText = profile.address || '-';
+                document.getElementById('table_join_date').innerText = jDate;
+
+                document.getElementById('edit_full_name').value = profile.full_name;
+                document.getElementById('edit_mobile').value = profile.mobile;
+                document.getElementById('edit_age').value = profile.age || '';
+                document.getElementById('edit_gender').value = profile.gender;
+                document.getElementById('edit_address').value = profile.address || '';
+
+                // Fetch Payments
+                const payRes = await apiFetch('http://localhost:5000/api/payments'); const allPayments = await payRes.json();
+                const myPayments = allPayments.filter(p => p.member_id == MY_MEMBER_ID); // Used == to handle string/int match
+                document.getElementById('stat_payments').innerText = myPayments.length;
+                const pBody = document.getElementById('myPaymentsBody'); pBody.innerHTML = '';
+                myPayments.forEach(p => { 
+                    const statusColor = p.status === 'Paid' ? 'bg-emerald-500' : 'bg-rose-500'; 
+                    pBody.innerHTML += `<tr class="border-b border-gray-100 hover:bg-gray-50"><td class="p-4">${new Date(p.payment_date).toLocaleDateString('en-GB')}</td><td class="p-4">Rs. ${parseFloat(p.amount).toFixed(2)}</td><td class="p-4 text-right"><span class="${statusColor} text-white px-3 py-1 rounded-full text-[11px] font-bold shadow-sm">${p.status}</span></td></tr>`; 
+                });
+
+                // Fetch Workouts
+                const workRes = await apiFetch('http://localhost:5000/api/workout-plans'); const allWorkouts = await workRes.json();
+                const myWorkouts = allWorkouts.filter(w => w.member_id == MY_MEMBER_ID);
+                document.getElementById('stat_workouts').innerText = myWorkouts.length;
+                const wCont = document.getElementById('myWorkoutsContainer'); wCont.innerHTML = '';
+                myWorkouts.forEach(w => { 
+                    wCont.innerHTML += `<div class="border border-gray-200 rounded-2xl p-6 bg-gray-50/50 hover:shadow-md transition"><h3 class="font-bold text-indigo-700 text-lg">${w.plan_title}</h3><div class="text-xs text-gray-500 my-3 bg-white border border-gray-200 w-max px-3 py-1.5 rounded-full"><i class="fa-regular fa-calendar mr-1"></i> ${new Date(w.start_date).toLocaleDateString('en-GB')} - ${new Date(w.end_date).toLocaleDateString('en-GB')}</div><p class="text-sm text-gray-700 leading-relaxed whitespace-pre-line">${w.details}</p></div>`; 
+                });
+
+            } catch(e) { console.error(e); }
+        }
+
+        // ==========================================
+        // MY ATTENDANCE LOGIC
+        // ==========================================
+        async function fetchMyAttendance() {
+            try {
+                const attRes = await apiFetch('http://localhost:5000/api/attendance'); const allAttendance = await attRes.json();
+                const myAttendance = allAttendance.filter(a => a.member_id == MY_MEMBER_ID);
+                document.getElementById('stat_attendance').innerText = myAttendance.length;
+                
+                const aBody = document.getElementById('myAttendanceBody'); aBody.innerHTML = '';
+                if(myAttendance.length === 0) {
+                    aBody.innerHTML = '<tr><td colspan="3" class="p-5 text-center text-gray-500">No attendance records found.</td></tr>';
+                    return;
+                }
+
+                myAttendance.forEach((a, i) => { 
+                    const dateStr = new Date(a.attendance_date).toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'});
+                    const timePill = `<span class="bg-[#38bdf8] text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm"><i class="fa-regular fa-clock"></i> ${a.time_in}</span>`;
+                    
+                    aBody.innerHTML += `
+                        <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                            <td class="p-5 font-bold text-gray-800">${i+1}</td>
+                            <td class="p-5 text-gray-600"><i class="fa-regular fa-calendar text-gray-400 mr-2"></i> ${dateStr}</td>
+                            <td class="p-5">${timePill}</td>
+                        </tr>`; 
+                });
+            } catch(e) { console.error(e); }
+        }
+
+        // ==========================================
+        // MY MEMBERSHIP LOGIC (Real Data)
+        // ==========================================
+        async function fetchMyMembership() {
+            try {
+                const res = await apiFetch(`http://localhost:5000/api/my-membership/${MY_MEMBER_ID}`);
+                const plans = await res.json();
+                
+                // 1. ප්ලෑන් එකක් නැතිවිට Loading අයින් කර හිස් බව පෙන්වීම
+                if(plans.length === 0) {
+                    document.getElementById('mem_plan_name').innerHTML = `<i class="fa-solid fa-crown text-gray-700"></i> No Plan`;
+                    document.getElementById('mem_duration_badge').innerText = `Duration: -`;
+                    document.getElementById('mem_days_remaining').innerText = `0 day(s)`;
+                    document.getElementById('mem_status_badge').className = "bg-gray-500 text-white px-2 py-0.5 rounded text-[10px] font-bold";
+                    document.getElementById('mem_status_badge').innerHTML = `<i class="fa-solid fa-circle-minus"></i> No Plan`;
+                    document.getElementById('mem_remaining_amt').innerText = "Rs. 0.0";
+                    document.getElementById('mem_paid_badge').innerText = "Paid: Rs. 0";
+                    
+                    document.getElementById('membershipTableBody').innerHTML = '<tr><td colspan="2" class="p-5 text-center text-gray-500 border-b border-gray-100">No active plan found.</td></tr>';
+                    return;
+                }
+
+                // 2. ප්ලෑන් එකක් ඇත්නම් එය පෙන්වීම
+                const myPlan = plans[0];
+                const sDate = new Date(myPlan.start_date);
+                const eDate = new Date(myPlan.end_date);
+                const today = new Date();
+                
+                // Calculate days remaining
+                const diffTime = eDate - today;
+                let daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                if(daysRemaining < 0) daysRemaining = 0;
+
+                // Set Cards
+                document.getElementById('mem_plan_name').innerHTML = `<i class="fa-solid fa-crown text-gray-700"></i> ${myPlan.plan_name}`;
+                document.getElementById('mem_duration_badge').innerText = `Duration: ${myPlan.duration_months} month(s)`;
+                document.getElementById('mem_days_remaining').innerText = `${daysRemaining} day(s)`;
+                
+                if(daysRemaining === 0) {
+                    document.getElementById('mem_status_badge').className = "bg-rose-500 text-white px-2 py-0.5 rounded text-[10px] font-bold";
+                    document.getElementById('mem_status_badge').innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Expired`;
+                } else {
+                    document.getElementById('mem_status_badge').className = "bg-emerald-500 text-white px-2 py-0.5 rounded text-[10px] font-bold";
+                    document.getElementById('mem_status_badge').innerHTML = `<i class="fa-solid fa-circle-check"></i> Active`;
+                }
+
+                // Fetch total paid for this member to calculate remaining
+                const payRes = await apiFetch('http://localhost:5000/api/payments'); 
+                const allPayments = await payRes.json();
+                const myPayments = allPayments.filter(p => p.member_id == MY_MEMBER_ID && p.status === 'Paid');
+                
+                let totalPaid = 0;
+                myPayments.forEach(p => totalPaid += parseFloat(p.amount));
+                
+                const planFee = parseFloat(myPlan.fee);
+                let remainingAmt = planFee - totalPaid;
+                if(remainingAmt < 0) remainingAmt = 0;
+
+                document.getElementById('mem_remaining_amt').innerText = "Rs. " + remainingAmt.toFixed(1);
+                document.getElementById('mem_paid_badge').innerText = "Paid: Rs. " + totalPaid;
+
+                // Populate Table
+                const tbody = document.getElementById('membershipTableBody');
+                tbody.innerHTML = `
+                    <tr class="border-b border-gray-100"><td class="p-5 font-bold w-1/3 bg-white">Plan Name</td><td class="p-5">${myPlan.plan_name}</td></tr>
+                    <tr class="border-b border-gray-100"><td class="p-5 font-bold w-1/3 bg-white">Duration (months)</td><td class="p-5">${myPlan.duration_months}</td></tr>
+                    <tr class="border-b border-gray-100"><td class="p-5 font-bold w-1/3 bg-white">Plan Fee</td><td class="p-5">Rs. ${planFee.toFixed(2)}</td></tr>
+                    <tr class="border-b border-gray-100"><td class="p-5 font-bold w-1/3 bg-white">Total Paid</td><td class="p-5">Rs. ${totalPaid}</td></tr>
+                    <tr class="border-b border-gray-100"><td class="p-5 font-bold w-1/3 bg-white">Remaining Amount</td><td class="p-5">Rs. ${remainingAmt.toFixed(1)}</td></tr>
+                    <tr class="border-b border-gray-100"><td class="p-5 font-bold w-1/3 bg-white">Start Date</td><td class="p-5 text-gray-600"><i class="fa-regular fa-calendar mr-1"></i> ${sDate.toLocaleDateString('en-GB')}</td></tr>
+                    <tr class="border-b border-gray-100"><td class="p-5 font-bold w-1/3 bg-white">End Date</td><td class="p-5 text-gray-600"><i class="fa-regular fa-calendar mr-1"></i> ${eDate.toLocaleDateString('en-GB')}</td></tr>
+                    <tr class="border-b border-gray-100"><td class="p-5 font-bold w-1/3 bg-white">Days Remaining</td><td class="p-5">${daysRemaining} day(s)</td></tr>
+                    <tr class="border-b border-gray-100"><td class="p-5 font-bold w-1/3 bg-white">Trainer</td><td class="p-5 text-gray-600"><i class="fa-solid fa-user mr-1 text-gray-400"></i> ${myPlan.trainer_name || 'Not Assigned'}</td></tr>
+                `;
+
+            } catch(e) { console.error(e); }
+        }
+
+        // ==========================================
+        // PROFILE UPDATE
+        // ==========================================
+        document.getElementById('editMyProfileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = { full_name: document.getElementById('edit_full_name').value, mobile: document.getElementById('edit_mobile').value, age: document.getElementById('edit_age').value || null, gender: document.getElementById('edit_gender').value, address: document.getElementById('edit_address').value };
+            try {
+                const res = await apiFetch(`http://localhost:5000/api/members/${MY_MEMBER_ID}`, { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+                if(res.ok) { alert("✅ Profile Updated!"); fetchMyData(); showMemberSection('memberProfileSection'); }
+            } catch(err) { alert("❌ Error updating profile."); }
+        });
+
+        // ==========================================
+        // CHANGE PASSWORD
+        // ==========================================
+        document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const current = document.getElementById('cp_current').value;
+            const newPass = document.getElementById('cp_new').value;
+            const confirmPass = document.getElementById('cp_confirm').value;
+
+            if(newPass !== confirmPass) { alert("❌ New Passwords do not match!"); return; }
+
+            try {
+                const res = await apiFetch(`http://localhost:5000/api/members/${MY_MEMBER_ID}/password`, {
+                    method: 'PUT', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ currentPassword: current, newPassword: newPass })
+                });
+                const result = await res.json();
+                if(res.ok) {
+                    alert("✅ Password changed successfully!");
+                    document.getElementById('changePasswordForm').reset();
+                    showMemberSection('memberProfileSection');
+                } else { alert("❌ " + result.message); }
+            } catch(err) { alert("❌ Server Error."); }
+        });
+
+        // ==========================================
+        // SUBMIT FEEDBACK
+        // ==========================================
+        document.getElementById('sendFeedbackForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const res = await apiFetch('http://localhost:5000/api/feedbacks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ member_id: MY_MEMBER_ID, message: document.getElementById('feedback_message').value }) });
+                if(res.ok) { alert("✅ Feedback sent!"); document.getElementById('sendFeedbackForm').reset(); }
+            } catch(e) {}
+        });
+
+        // INITIAL LOAD
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchMyData();
+            fetchMyAttendance();
+            fetchMyMembership(); // අලුතින් එකතු කරන ලදී
+        });
+    </script>
+</body>
+</html>

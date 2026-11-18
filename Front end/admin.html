@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - My Gym</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .nav-scrollbar::-webkit-scrollbar { height: 4px; }
+        .nav-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .nav-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        .table-scrollbar::-webkit-scrollbar { height: 12px; }
+        .table-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .table-scrollbar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 8px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- TOP NAVBAR -->
+    <nav class="bg-[#1e293b] text-white px-4 py-3 flex items-center justify-between shadow-md sticky top-0 z-50">
+        <div class="flex items-center gap-6 overflow-x-auto nav-scrollbar whitespace-nowrap pb-1 md:pb-0 w-full">
+            <a href="#" class="flex items-center text-lg font-bold tracking-wide mr-2 flex-shrink-0">
+                <i class="fa-solid fa-dumbbell mr-2"></i> My.Gym <span class="text-xs bg-rose-500 text-white px-2 py-0.5 rounded ml-2">ADMIN</span>
+            </a>
+            <div class="flex items-center gap-1 text-[13px] font-medium text-gray-300">
+                <button onclick="showAdminSection('adminDashboardSection')" class="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-white/10 text-white transition"><i class="fa-solid fa-chart-line"></i> Dashboard</button>
+                <button onclick="showAdminSection('adminMembersSection'); fetchMembers();" class="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-white/10 hover:text-white transition"><i class="fa-solid fa-users"></i> Members</button>
+                <button onclick="showAdminSection('adminPlansSection'); fetchPlans();" class="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-white/10 hover:text-white transition"><i class="fa-solid fa-clipboard-list"></i> Plans</button>
+                <button onclick="showAdminSection('adminTrainersSection'); fetchTrainers();" class="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-white/10 hover:text-white transition"><i class="fa-solid fa-user-tie"></i> Trainers</button>
+                <button onclick="showAdminSection('adminPaymentsSection'); fetchPayments();" class="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-white/10 hover:text-white transition"><i class="fa-solid fa-credit-card"></i> Payments</button>
+                <button onclick="showAdminSection('adminAttendanceSection'); fetchAttendance();" class="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-white/10 hover:text-white transition"><i class="fa-solid fa-calendar-check"></i> Attendance</button>
+                <button onclick="showAdminSection('adminEquipmentSection'); fetchEquipment();" class="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-white/10 hover:text-white transition"><i class="fa-solid fa-wrench"></i> Equipment</button>
+                <button onclick="showAdminSection('adminWorkoutSection'); fetchWorkoutPlans();" class="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-white/10 hover:text-white transition"><i class="fa-solid fa-dumbbell"></i> Workout Plans</button>
+                <button onclick="showAdminSection('adminFeedbackSection'); fetchFeedbacks();" class="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-white/10 hover:text-white transition"><i class="fa-solid fa-star"></i> Feedbacks</button>
+                <button onclick="showAdminSection('adminReportsSection')" class="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-white/10 hover:text-white transition"><i class="fa-solid fa-file-pdf"></i> Reports</button>
+            </div>
+        </div>
+        <div class="ml-4 flex-shrink-0">
+            <a href="#" id="adminLogoutBtn" class="flex items-center gap-2 bg-[#0f172a] hover:bg-rose-600 text-white text-[13px] font-semibold px-4 py-1.5 rounded border border-gray-700 hover:border-rose-500 transition">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+            </a>
+        </div>
+    </nav>
+
+    <main class="flex-grow p-4 lg:p-8 overflow-y-auto">
+        <div class="bg-white rounded-[30px] shadow-sm border border-gray-100 p-6 lg:p-8 max-w-[1400px] mx-auto min-h-[70vh]">
+            
+            <!-- ================= 1. ADMIN DASHBOARD ================= -->
+            <div id="adminDashboardSection" class="admin-page-section block">
+                <div class="bg-gradient-to-r from-[#0ea5e9] via-[#a855f7] to-[#f43f5e] rounded-2xl p-8 flex flex-col md:flex-row justify-between items-start md:items-center text-white shadow-md">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider mb-1 opacity-90">Admin Dashboard</p>
+                        <h1 class="text-3xl font-bold flex items-center gap-2 mb-1"><i class="fa-solid fa-chart-line text-2xl"></i> Overview & Controls</h1>
+                        <p class="text-sm opacity-90 font-medium">Manage members, memberships, registrations, payments, attendance and more.</p>
+                    </div>
+                    <div class="mt-6 md:mt-0 flex gap-3">
+                        <button onclick="showAdminSection('adminMembersSection'); toggleAdminMembersView('addMemberView'); populateAddMemberOptions();" class="bg-white text-gray-900 font-bold py-2 px-5 rounded-full text-sm shadow-sm hover:bg-gray-100 transition flex items-center gap-2">
+                            <i class="fa-solid fa-user-plus"></i> Add Member
+                        </button>
+                        <button onclick="showAdminSection('adminPaymentsSection'); toggleAdminPaymentsView('recordPaymentView'); populateMembersDropdowns();" class="border border-white/50 bg-white/10 hover:bg-white/20 text-white font-bold py-2 px-5 rounded-full text-sm transition flex items-center gap-2">
+                            <i class="fa-regular fa-credit-card"></i> Record Payment
+                        </button>
+                        <button onclick="showAdminSection('adminReportsSection')" class="border border-white/50 bg-white/10 hover:bg-white/20 text-white font-bold py-2 px-5 rounded-full text-sm transition flex items-center gap-2">
+                            <i class="fa-solid fa-file-pdf"></i> Reports
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+                    <div class="bg-[#0284c7] text-white p-6 rounded-2xl relative overflow-hidden shadow-sm">
+                        <div class="absolute top-5 right-5 bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-user-group"></i></div>
+                        <h3 class="text-sm font-medium opacity-90">Total Members</h3>
+                        <p class="text-4xl font-bold my-2" id="dash_total_members">0</p>
+                        <div class="text-xs opacity-90 mb-5 flex items-center gap-1.5"><i class="fa-solid fa-users text-[10px]"></i> All registered members</div>
+                        <button onclick="showAdminSection('adminMembersSection'); fetchMembers();" class="bg-white text-[#0284c7] text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 hover:bg-gray-50 transition w-max"><i class="fa-solid fa-arrow-right"></i> Manage</button>
+                    </div>
+                    <div class="bg-[#16a34a] text-white p-6 rounded-2xl relative overflow-hidden shadow-sm">
+                        <div class="absolute top-5 right-5 bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-crown"></i></div>
+                        <h3 class="text-sm font-medium opacity-90">Active Memberships</h3>
+                        <p class="text-4xl font-bold my-2" id="dash_active_plans">0</p>
+                        <div class="text-xs opacity-90 mb-5 flex items-center gap-1.5"><i class="fa-solid fa-crown text-[10px]"></i> Currently active plans</div>
+                        <button onclick="showAdminSection('adminPlansSection'); fetchPlans();" class="bg-white text-[#16a34a] text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 hover:bg-gray-50 transition w-max"><i class="fa-solid fa-arrow-right"></i> Plans</button>
+                    </div>
+                    <div class="bg-[#9333ea] text-white p-6 rounded-2xl relative overflow-hidden shadow-sm">
+                        <div class="absolute top-5 right-5 bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center text-lg"><i class="fa-regular fa-calendar-check"></i></div>
+                        <h3 class="text-sm font-medium opacity-90">Today Registrations</h3>
+                        <p class="text-4xl font-bold my-2" id="dash_today_regs">0</p>
+                        <div class="text-xs opacity-90 mb-5 flex items-center gap-1.5"><i class="fa-regular fa-calendar text-[10px]"></i> New signups today</div>
+                        <button class="bg-white text-[#9333ea] text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 hover:bg-gray-50 transition w-max"><i class="fa-solid fa-arrow-right"></i> View</button>
+                    </div>
+                    <div class="bg-[#ea580c] text-white p-6 rounded-2xl relative overflow-hidden shadow-sm">
+                        <div class="absolute top-5 right-5 bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center text-lg"><i class="fa-regular fa-clock"></i></div>
+                        <h3 class="text-sm font-medium opacity-90">Pending Payments</h3>
+                        <p class="text-4xl font-bold my-2" id="dash_pending_pays">0</p>
+                        <div class="text-xs opacity-90 mb-5 flex items-center gap-1.5"><i class="fa-solid fa-triangle-exclamation text-[10px]"></i> Require follow-up</div>
+                        <button onclick="showAdminSection('adminPaymentsSection'); fetchPayments();" class="bg-white text-[#ea580c] text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 hover:bg-gray-50 transition w-max"><i class="fa-solid fa-arrow-right"></i> Payments</button>
+                    </div>
+                </div>
+
+                <div class="mt-10">
+                    <div class="flex justify-between items-center mb-5">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2"><i class="fa-solid fa-bolt text-gray-500"></i> Quick Access</h3>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div onclick="showAdminSection('adminMembersSection'); fetchMembers();" class="bg-white border border-gray-100 shadow-sm p-4 rounded-2xl flex items-center cursor-pointer hover:border-gray-300 transition group">
+                            <div class="bg-gray-50 w-12 h-12 rounded-xl flex items-center justify-center text-gray-500 mr-4 group-hover:bg-[#1e293b] group-hover:text-white transition"><i class="fa-solid fa-user-group text-lg"></i></div>
+                            <div class="flex-1"><h4 class="text-sm font-bold text-gray-800">Manage Members</h4></div>
+                        </div>
+                        <div onclick="showAdminSection('adminPlansSection'); fetchPlans();" class="bg-white border border-gray-100 shadow-sm p-4 rounded-2xl flex items-center cursor-pointer hover:border-gray-300 transition group">
+                            <div class="bg-gray-50 w-12 h-12 rounded-xl flex items-center justify-center text-gray-500 mr-4 group-hover:bg-[#1e293b] group-hover:text-white transition"><i class="fa-solid fa-crown text-lg"></i></div>
+                            <div class="flex-1"><h4 class="text-sm font-bold text-gray-800">Membership Plans</h4></div>
+                        </div>
+                        <div onclick="showAdminSection('adminTrainersSection'); fetchTrainers();" class="bg-white border border-gray-100 shadow-sm p-4 rounded-2xl flex items-center cursor-pointer hover:border-gray-300 transition group">
+                            <div class="bg-gray-50 w-12 h-12 rounded-xl flex items-center justify-center text-gray-500 mr-4 group-hover:bg-[#1e293b] group-hover:text-white transition"><i class="fa-solid fa-user-tie text-lg"></i></div>
+                            <div class="flex-1"><h4 class="text-sm font-bold text-gray-800">Trainers</h4></div>
+                        </div>
+                        <div onclick="showAdminSection('adminPaymentsSection'); fetchPayments();" class="bg-white border border-gray-100 shadow-sm p-4 rounded-2xl flex items-center cursor-pointer hover:border-gray-300 transition group">
+                            <div class="bg-gray-50 w-12 h-12 rounded-xl flex items-center justify-center text-gray-500 mr-4 group-hover:bg-[#1e293b] group-hover:text-white transition"><i class="fa-regular fa-credit-card text-lg"></i></div>
+                            <div class="flex-1"><h4 class="text-sm font-bold text-gray-800">Payments</h4></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 2. MEMBERS SECTION ================= -->
+            <div id="adminMembersSection" class="admin-page-section hidden">
+                <div id="membersListView" class="block">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-user-group text-gray-700"></i> Members</h2>
+                        <button onclick="toggleAdminMembersView('addMemberView'); populateAddMemberOptions();" class="bg-[#1e293b] text-white font-semibold py-2 px-5 rounded-xl text-sm"><i class="fa-solid fa-user-plus"></i> Add Member</button>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-white border-b border-gray-100 text-sm font-bold text-gray-800">
+                                <tr><th class="p-4">#</th><th class="p-4">Full Name</th><th class="p-4">Username</th><th class="p-4">Mobile</th><th class="p-4">Join Date</th><th class="p-4 text-right">Actions</th></tr>
+                            </thead>
+                            <tbody id="membersTableBody" class="text-sm text-gray-600 bg-white"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ADD MEMBER UI -->
+                <div id="addMemberView" class="hidden">
+                    <div class="flex justify-between items-center mb-8 border-b border-gray-100 pb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-user-plus text-gray-600"></i> Add Member</h2>
+                            <p class="text-sm text-gray-500 mt-1">Create a new member profile and assign plan/trainer if needed.</p>
+                        </div>
+                        <button onclick="toggleAdminMembersView('membersListView')" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-5 rounded-full text-sm shadow-sm transition flex items-center gap-2 hover:bg-gray-50">
+                            <i class="fa-solid fa-arrow-left"></i> Back to Members
+                        </button>
+                    </div>
+                    
+                    <form id="addMemberForm" class="max-w-5xl space-y-8">
+                        <div class="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <div class="mb-4 text-sm font-bold text-gray-800 flex items-center gap-2"><i class="fa-solid fa-key text-gray-500"></i> Login Credentials</div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Username <span class="text-red-500">*</span></label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-user absolute left-4 top-3.5 text-gray-400"></i>
+                                        <input type="text" id="username" class="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 outline-none text-sm focus:border-blue-500" placeholder="e.g. rahul123" required>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Password <span class="text-red-500">*</span></label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-lock absolute left-4 top-3.5 text-gray-400"></i>
+                                        <input type="password" id="password" class="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 outline-none text-sm focus:border-blue-500" placeholder="Create a strong password" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <div class="mb-4 text-sm font-bold text-gray-800 flex items-center gap-2"><i class="fa-regular fa-address-card text-gray-500"></i> Basic Information</div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Full Name <span class="text-red-500">*</span></label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-signature absolute left-4 top-3.5 text-gray-400"></i>
+                                        <input type="text" id="full_name" class="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 outline-none text-sm focus:border-blue-500" placeholder="e.g. Rahul Sharma" required>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Mobile <span class="text-red-500">*</span></label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-phone absolute left-4 top-3.5 text-gray-400"></i>
+                                        <input type="text" id="mobile" class="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 outline-none text-sm focus:border-blue-500" placeholder="e.g. 1234******" required>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Age</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-hashtag absolute left-4 top-3.5 text-gray-400"></i>
+                                        <input type="number" id="age" class="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 outline-none text-sm focus:border-blue-500">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Gender</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-venus-mars absolute left-4 top-3.5 text-gray-400"></i>
+                                        <select id="gender" class="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 outline-none text-sm focus:border-blue-500">
+                                            <option value="" disabled selected>Select</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Join Date</label>
+                                    <div class="relative">
+                                        <input type="date" id="join_date" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-2.5 outline-none text-sm focus:border-blue-500">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Address</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-location-dot absolute left-4 top-3.5 text-gray-400"></i>
+                                        <input type="text" id="address" class="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 outline-none text-sm focus:border-blue-500" placeholder="House no, area, city...">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <div class="mb-4 text-sm font-bold text-gray-800 flex items-center gap-2"><i class="fa-solid fa-sitemap text-gray-500"></i> Membership & Trainer Assignment</div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Membership Plan</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-crown absolute left-4 top-3.5 text-gray-400"></i>
+                                        <select id="assign_plan" class="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 outline-none text-sm focus:border-blue-500">
+                                            <option value="">No Plan</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Trainer</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-user-tie absolute left-4 top-3.5 text-gray-400"></i>
+                                        <select id="assign_trainer" class="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 outline-none text-sm focus:border-blue-500">
+                                            <option value="">No Trainer</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 mt-6">
+                            <button type="submit" class="bg-[#1e293b] hover:bg-gray-900 text-white font-bold py-2.5 px-6 rounded-xl text-sm shadow-sm transition flex items-center gap-2">
+                                <i class="fa-regular fa-floppy-disk"></i> Save Member
+                            </button>
+                            <button type="button" onclick="toggleAdminMembersView('membersListView')" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold py-2.5 px-5 rounded-xl text-sm shadow-sm transition flex items-center gap-2">
+                                <i class="fa-solid fa-xmark"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- EDIT MEMBER UI (NEW) -->
+                <div id="editMemberView" class="hidden">
+                    <div class="flex justify-between items-center mb-8 border-b border-gray-100 pb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-user-pen text-gray-600"></i> Edit Member Profile</h2>
+                            <p class="text-sm text-gray-500 mt-1">Update basic information for this member.</p>
+                        </div>
+                        <button onclick="toggleAdminMembersView('membersListView')" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-5 rounded-full text-sm shadow-sm transition flex items-center gap-2 hover:bg-gray-50">
+                            <i class="fa-solid fa-arrow-left"></i> Back to Members
+                        </button>
+                    </div>
+                    
+                    <form id="editMemberForm" class="max-w-4xl space-y-8">
+                        <input type="hidden" id="edit_m_id">
+                        <div class="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <div class="mb-4 text-sm font-bold text-gray-800 flex items-center gap-2"><i class="fa-regular fa-address-card text-gray-500"></i> Update Basic Information</div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Full Name <span class="text-red-500">*</span></label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-signature absolute left-4 top-3.5 text-gray-400"></i>
+                                        <input type="text" id="edit_m_full_name" class="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 outline-none text-sm focus:border-blue-500" required>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Mobile <span class="text-red-500">*</span></label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-phone absolute left-4 top-3.5 text-gray-400"></i>
+                                        <input type="text" id="edit_m_mobile" class="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 outline-none text-sm focus:border-blue-500" required>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Age</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-hashtag absolute left-4 top-3.5 text-gray-400"></i>
+                                        <input type="number" id="edit_m_age" class="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 outline-none text-sm focus:border-blue-500">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Gender</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-venus-mars absolute left-4 top-3.5 text-gray-400"></i>
+                                        <select id="edit_m_gender" class="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 outline-none text-sm focus:border-blue-500">
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Address</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-location-dot absolute left-4 top-3.5 text-gray-400"></i>
+                                        <input type="text" id="edit_m_address" class="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 outline-none text-sm focus:border-blue-500">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 mt-6">
+                            <button type="submit" class="bg-[#1e293b] hover:bg-gray-900 text-white font-bold py-2.5 px-6 rounded-xl text-sm shadow-sm transition flex items-center gap-2">
+                                <i class="fa-regular fa-floppy-disk"></i> Update Profile
+                            </button>
+                            <button type="button" onclick="toggleAdminMembersView('membersListView')" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold py-2.5 px-5 rounded-xl text-sm shadow-sm transition flex items-center gap-2">
+                                <i class="fa-solid fa-xmark"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- RENEW PLAN NEW UI -->
+                <div id="renewPlanView" class="hidden">
+                    <div class="flex justify-between items-center mb-8 border-b border-gray-100 pb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-rotate-right text-gray-600"></i> Renew / Extend Plan</h2>
+                            <p class="text-sm text-gray-500 mt-1" id="renewMemberNameDisplay">Renewing plan for member</p>
+                        </div>
+                        <button onclick="toggleAdminMembersView('membersListView')" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-5 rounded-full text-sm shadow-sm transition flex items-center gap-2 hover:bg-gray-50">
+                            <i class="fa-solid fa-arrow-left"></i> Back to Members
+                        </button>
+                    </div>
+                    
+                    <form id="renewPlanForm" class="max-w-3xl bg-gray-50/50 p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <input type="hidden" id="renew_member_id">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Select New Plan <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-crown absolute left-4 top-3.5 text-gray-400"></i>
+                                    <select id="renew_plan_id" class="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 outline-none text-sm focus:border-blue-500" required></select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Assign Trainer</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-user-tie absolute left-4 top-3.5 text-gray-400"></i>
+                                    <select id="renew_trainer_id" class="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 outline-none text-sm focus:border-blue-500"></select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-8">
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Start Date (From when?) <span class="text-red-500">*</span></label>
+                            <input type="date" id="renew_start_date" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-2.5 outline-none text-sm focus:border-blue-500" required>
+                        </div>
+                        
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-xl text-sm shadow-sm transition flex items-center gap-2">
+                            <i class="fa-solid fa-check"></i> Extend Membership
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ================= 3. PLANS SECTION ================= -->
+            <div id="adminPlansSection" class="admin-page-section hidden">
+                <div id="plansListView" class="block">
+                    <div class="flex justify-between items-center mb-8 border-b border-gray-100 pb-6">
+                        <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-crown text-gray-400"></i> Membership Plans</h2>
+                        <button onclick="toggleAdminPlansView('addPlanView')" class="bg-[#1e293b] text-white font-semibold py-2.5 px-6 rounded-xl text-sm">Add Plan</button>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-white border-b border-gray-100 text-sm font-bold text-gray-900">
+                                <tr><th class="p-4">Name</th><th class="p-4">Fee</th></tr>
+                            </thead>
+                            <tbody id="plansTableBody" class="text-sm text-gray-800 bg-white"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="addPlanView" class="hidden">
+                    <div class="flex justify-between items-center mb-8 border-b pb-4">
+                        <h2 class="text-2xl font-bold text-gray-900">Add Plan</h2>
+                        <button onclick="toggleAdminPlansView('plansListView')" class="border px-4 py-2 rounded-full text-sm">Back</button>
+                    </div>
+                    <form id="addPlanForm" class="max-w-2xl bg-white p-6 rounded-2xl border border-gray-100">
+                        <div class="mb-5"><input type="text" id="plan_name" class="w-full border rounded-lg p-2.5" placeholder="Plan Name" required></div>
+                        <div class="grid grid-cols-2 gap-6 mb-6">
+                            <input type="number" id="duration_months" class="w-full border rounded-lg p-2.5" placeholder="Duration (Months)" required>
+                            <input type="number" id="fee" class="w-full border rounded-lg p-2.5" placeholder="Fee (Rs.)" required>
+                        </div>
+                        <button type="submit" class="bg-[#1e293b] text-white py-2.5 px-6 rounded-xl text-sm">Save</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ================= 4. TRAINERS SECTION ================= -->
+            <div id="adminTrainersSection" class="admin-page-section hidden">
+                <div id="trainersListView" class="block">
+                    <div class="flex justify-between items-center mb-8 border-b border-gray-100 pb-6">
+                        <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-user-tie text-gray-600"></i> Trainers</h2>
+                        <button onclick="openNewTrainerForm()" class="bg-[#1e293b] text-white font-semibold py-2.5 px-6 rounded-xl text-sm"><i class="fa-solid fa-plus"></i> Add Trainer</button>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-white border-b border-gray-100 text-sm font-bold text-gray-900">
+                                <tr><th class="p-4">#</th><th class="p-4">Name</th><th class="p-4">Mobile</th><th class="p-4">Specialization</th><th class="p-4">Shift Timing</th><th class="p-4 text-right">Actions</th></tr>
+                            </thead>
+                            <tbody id="trainersTableBody" class="text-sm text-gray-800 bg-white"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="addTrainerView" class="hidden">
+                    <div class="flex justify-between items-center mb-8 border-b pb-4">
+                        <h2 id="trainerFormHeading" class="text-2xl font-bold text-gray-900">Add New Trainer</h2>
+                        <button onclick="toggleAdminTrainersView('trainersListView')" class="border px-4 py-2 rounded-full text-sm">Back</button>
+                    </div>
+                    <form id="addTrainerForm" class="max-w-2xl bg-white p-6 rounded-2xl border border-gray-100">
+                        <input type="hidden" id="trainer_edit_id">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="trainer_name" class="block text-sm font-bold text-gray-700 mb-1">Full Name</label>
+                                <input type="text" id="trainer_name" placeholder="Full Name" class="border p-2 rounded w-full" required>
+                            </div>
+                            <div>
+                                <label for="trainer_mobile" class="block text-sm font-bold text-gray-700 mb-1">Mobile</label>
+                                <input type="text" id="trainer_mobile" placeholder="Mobile" class="border p-2 rounded w-full" required>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label for="trainer_specialization" class="block text-sm font-bold text-gray-700 mb-1">Specialization</label>
+                                <select id="trainer_specialization" class="border p-2 rounded w-full"><option>Strength Training</option><option>Cardio</option></select>
+                            </div>
+                            <div>
+                                <label for="trainer_shift_start" class="block text-sm font-bold text-gray-700 mb-1">Shift Start Time</label>
+                                <input type="time" id="trainer_shift_start" class="border p-2 rounded w-full" required>
+                            </div>
+                            <div>
+                                <label for="trainer_shift_end" class="block text-sm font-bold text-gray-700 mb-1">Shift End Time</label>
+                                <input type="time" id="trainer_shift_end" class="border p-2 rounded w-full" required>
+                            </div>
+                        </div>
+                        <p id="trainerShiftHelp" class="text-xs text-gray-500 mb-4">Set the exact start and end times. For example: 6:00 AM - 10:00 AM.</p>
+                        <button id="trainerSaveButton" type="submit" class="bg-[#1e293b] text-white px-6 py-2 rounded-xl text-sm">Save Trainer</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ================= 5. PAYMENTS SECTION ================= -->
+            <div id="adminPaymentsSection" class="admin-page-section hidden">
+                <div id="paymentsListView" class="block">
+                    <div class="flex justify-between items-center mb-8 border-b border-gray-100 pb-6">
+                        <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-regular fa-credit-card text-gray-600"></i> Payments</h2>
+                        <button onclick="toggleAdminPaymentsView('recordPaymentView'); populateMembersDropdowns();" class="bg-[#1e293b] text-white py-2.5 px-6 rounded-xl text-sm">Record Payment</button>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-white border-b border-gray-100 text-sm font-bold text-gray-900">
+                                <tr><th class="p-4">Member</th><th class="p-4">Date</th><th class="p-4">Amount</th><th class="p-4 text-right">Status</th></tr>
+                            </thead>
+                            <tbody id="paymentsTableBody" class="text-sm text-gray-800 bg-white"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="recordPaymentView" class="hidden">
+                    <div class="flex justify-between items-center mb-8 border-b pb-4">
+                        <h2 class="text-2xl font-bold text-gray-900">Record Payment</h2>
+                        <button onclick="toggleAdminPaymentsView('paymentsListView')" class="border px-4 py-2 rounded-full text-sm">Back</button>
+                    </div>
+                    <form id="addPaymentForm" class="max-w-2xl bg-white p-6 rounded-2xl border border-gray-100">
+                        <div class="mb-5"><select id="payment_member_id" class="w-full border rounded-lg p-2.5 bg-white" required></select></div>
+                        <div class="grid grid-cols-2 gap-6 mb-6">
+                            <input type="number" id="payment_amount" class="w-full border rounded-lg p-2.5" placeholder="Amount (Rs.)" required>
+                            <input type="date" id="payment_date" class="w-full border rounded-lg p-2.5" required>
+                            <select id="payment_status" class="w-full border rounded-lg p-2.5 bg-white"><option value="Paid">Paid</option><option value="Pending">Pending</option></select>
+                        </div>
+                        <button type="submit" class="bg-[#1e293b] text-white py-2.5 px-6 rounded-xl text-sm">Save Payment</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ================= 6. ATTENDANCE SECTION ================= -->
+            <div id="adminAttendanceSection" class="admin-page-section hidden">
+                <div id="attendanceListView" class="block">
+                    <div class="flex justify-between items-center mb-8 border-b border-gray-100 pb-6">
+                        <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-calendar-check text-gray-600"></i> Attendance</h2>
+                        <button onclick="toggleAdminAttendanceView('markAttendanceView'); populateMembersDropdowns();" class="bg-[#1e293b] text-white py-2.5 px-6 rounded-xl text-sm"><i class="fa-solid fa-plus"></i> Mark Attendance</button>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-white border-b border-gray-100 text-sm font-bold text-gray-900">
+                                <tr><th class="p-4">#</th><th class="p-4">Member</th><th class="p-4">Date</th><th class="p-4">Time In</th></tr>
+                            </thead>
+                            <tbody id="attendanceTableBody" class="text-sm text-gray-800 bg-white"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="markAttendanceView" class="hidden">
+                    <div class="flex justify-between items-center mb-8 border-b pb-4">
+                        <h2 class="text-2xl font-bold text-gray-900">Mark Attendance</h2>
+                        <button onclick="toggleAdminAttendanceView('attendanceListView')" class="border px-4 py-2 rounded-full text-sm">Back</button>
+                    </div>
+                    <form id="addAttendanceForm" class="max-w-2xl bg-white p-6 rounded-2xl border border-gray-100">
+                        <div class="mb-5"><select id="attendance_member_id" class="w-full border rounded-lg p-2.5" required></select></div>
+                        <div class="grid grid-cols-2 gap-6 mb-6">
+                            <input type="date" id="attendance_date" class="w-full border rounded-lg p-2.5" required>
+                            <input type="time" id="attendance_time" class="w-full border rounded-lg p-2.5" required>
+                        </div>
+                        <button type="submit" class="bg-[#1e293b] text-white py-2.5 px-6 rounded-xl text-sm">Save Attendance</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ================= 7. EQUIPMENT SECTION ================= -->
+            <div id="adminEquipmentSection" class="admin-page-section hidden">
+                <div id="equipmentListView" class="block">
+                    <div class="flex justify-between items-center mb-8 border-b border-gray-100 pb-6">
+                        <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-wrench text-gray-600"></i> Equipment</h2>
+                        <button onclick="toggleAdminEquipmentView('addEquipmentView')" class="bg-[#1e293b] text-white py-2.5 px-6 rounded-xl text-sm"><i class="fa-solid fa-plus"></i> Add Equipment</button>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-white border-b border-gray-100 text-sm font-bold text-gray-900">
+                                <tr><th class="p-4">Name</th><th class="p-4">Units</th><th class="p-4">Price</th><th class="p-4 text-right">Actions</th></tr>
+                            </thead>
+                            <tbody id="equipmentTableBody" class="text-sm text-gray-800 bg-white"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="addEquipmentView" class="hidden">
+                    <div class="flex justify-between items-center mb-8 border-b pb-4">
+                        <h2 class="text-2xl font-bold text-gray-900">Add Equipment</h2>
+                        <button onclick="toggleAdminEquipmentView('equipmentListView')" class="border px-4 py-2 rounded-full text-sm">Back</button>
+                    </div>
+                    <form id="addEquipmentForm" class="max-w-2xl bg-white p-6 rounded-2xl border border-gray-100">
+                        <div class="mb-5"><input type="text" id="eq_name" class="w-full border rounded-lg p-2.5" placeholder="Equipment Name" required></div>
+                        <div class="grid grid-cols-2 gap-6 mb-6">
+                            <input type="number" id="eq_units" class="w-full border rounded-lg p-2.5" placeholder="Units" required>
+                            <input type="number" id="eq_price" class="w-full border rounded-lg p-2.5" placeholder="Price (Rs.)" required>
+                        </div>
+                        <button type="submit" class="bg-[#1e293b] text-white py-2.5 px-6 rounded-xl text-sm">Save Equipment</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ================= 8. WORKOUT PLANS SECTION ================= -->
+            <div id="adminWorkoutSection" class="admin-page-section hidden">
+                <div id="workoutPlansListView" class="block">
+                    <div class="flex justify-between items-center mb-8 border-b border-gray-100 pb-6">
+                        <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-dumbbell text-gray-600"></i> Workout / Diet Plans</h2>
+                        <button onclick="toggleAdminWorkoutView('addWorkoutPlanView'); populateMembersDropdowns();" class="bg-[#1e293b] text-white py-2.5 px-6 rounded-xl text-sm"><i class="fa-solid fa-plus"></i> Add Plan</button>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-white border-b border-gray-100 text-sm font-bold text-gray-900">
+                                <tr><th class="p-4">Member</th><th class="p-4">Plan Title</th><th class="p-4">Time Period</th><th class="p-4">Routine Details</th><th class="p-4 text-right">Actions</th></tr>
+                            </thead>
+                            <tbody id="workoutPlansTableBody" class="text-sm text-gray-800 bg-white"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="addWorkoutPlanView" class="hidden">
+                    <div class="flex justify-between items-center mb-8 border-b pb-4">
+                        <h2 class="text-2xl font-bold text-gray-900">Assign Workout Plan</h2>
+                        <button onclick="toggleAdminWorkoutView('workoutPlansListView')" class="border px-4 py-2 rounded-full text-sm">Back</button>
+                    </div>
+                    <form id="addWorkoutPlanForm" class="max-w-3xl bg-white p-6 rounded-2xl border border-gray-100">
+                        <div class="grid grid-cols-2 gap-6 mb-6">
+                            <select id="workout_member_id" class="w-full border rounded-lg p-2.5" required></select>
+                            <input type="text" id="workout_title" class="w-full border rounded-lg p-2.5" placeholder="Plan Title" required>
+                        </div>
+                        <div class="grid grid-cols-2 gap-6 mb-6">
+                            <input type="date" id="workout_start_date" class="w-full border rounded-lg p-2.5" required>
+                            <input type="date" id="workout_end_date" class="w-full border rounded-lg p-2.5" required>
+                        </div>
+                        <textarea id="workout_details" rows="4" class="w-full border rounded-lg p-2.5 mb-6" placeholder="Routine / Diet Details" required></textarea>
+                        <button type="submit" class="bg-[#1e293b] text-white py-2.5 px-6 rounded-xl text-sm">Save Plan</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ================= 9. FEEDBACKS SECTION ================= -->
+            <div id="adminFeedbackSection" class="admin-page-section hidden">
+                <div class="mb-8 border-b border-gray-100 pb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                        <i class="fa-solid fa-star text-gray-500 text-[22px]"></i> Members Feedback
+                    </h2>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm mt-4">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-white border-b border-gray-100 text-sm font-bold text-gray-900">
+                            <tr><th class="py-4 px-4">Member</th><th class="py-4 px-4">Message</th></tr>
+                        </thead>
+                        <tbody id="feedbackTableBody" class="text-sm text-gray-800 bg-white"></tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <!-- ================= 10. ADMIN PDF REPORTS ================= -->
+            <div id="adminReportsSection" class="admin-page-section hidden">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-7 border-b border-gray-100 pb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-3"><i class="fa-solid fa-file-pdf text-rose-500"></i> Gym Management Reports</h2>
+                        <p class="text-sm text-slate-500 mt-2">View a report summary and download a printable A4 PDF using real gym records.</p>
+                    </div>
+                    <span class="text-xs bg-slate-100 border border-slate-200 text-slate-600 font-semibold rounded-full px-4 py-2 w-max"><i class="fa-solid fa-lock mr-1"></i> Admin only</span>
+                </div>
+                <form id="gymReportForm" class="bg-slate-50 rounded-2xl border border-slate-200 p-5 lg:p-6" novalidate>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                        <div>
+                            <label for="gymReportType" class="block text-sm font-semibold text-slate-700 mb-2">Report Type</label>
+                            <select id="gymReportType" class="w-full px-3 py-3 rounded-xl border border-slate-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-sky-400">
+                                <option value="full">Complete Gym Report</option>
+                                <option value="financial">Financial Report Only</option>
+                                <option value="members">Membership Report Only</option>
+                                <option value="attendance">Attendance Report Only</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="gymReportPeriod" class="block text-sm font-semibold text-slate-700 mb-2">Date Range</label>
+                            <select id="gymReportPeriod" class="w-full px-3 py-3 rounded-xl border border-slate-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-sky-400">
+                                <option value="monthly">Monthly</option>
+                                <option value="yearly">Yearly</option>
+                                <option value="custom">Custom Date Range</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="gymReportMonthFields" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+                        <div>
+                            <label for="gymReportMonth" class="block text-sm font-semibold text-slate-700 mb-2">Select Month</label>
+                            <input id="gymReportMonth" type="month" class="w-full px-3 py-3 rounded-xl border border-slate-300 bg-white text-sm" required>
+                        </div>
+                    </div>
+                    <div id="gymReportYearFields" class="hidden mb-5">
+                        <label for="gymReportYear" class="block text-sm font-semibold text-slate-700 mb-2">Select Year</label>
+                        <input id="gymReportYear" type="number" min="2000" max="2100" step="1" class="w-full sm:w-56 px-3 py-3 rounded-xl border border-slate-300 bg-white text-sm">
+                    </div>
+                    <div id="gymReportCustomFields" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+                        <div><label for="gymReportStart" class="block text-sm font-semibold text-slate-700 mb-2">Start Date</label><input id="gymReportStart" type="date" class="w-full px-3 py-3 rounded-xl border border-slate-300 bg-white text-sm"></div>
+                        <div><label for="gymReportEnd" class="block text-sm font-semibold text-slate-700 mb-2">End Date</label><input id="gymReportEnd" type="date" class="w-full px-3 py-3 rounded-xl border border-slate-300 bg-white text-sm"></div>
+                    </div>
+                    <div class="flex flex-wrap gap-3 items-center">
+                        <button type="submit" id="gymReportPreviewBtn" class="bg-[#1e293b] text-white px-5 py-3 rounded-xl text-sm font-semibold hover:bg-slate-700 transition flex gap-2 items-center"><i class="fa-regular fa-eye"></i> Generate Preview</button>
+                        <button type="button" id="gymReportPdfBtn" class="bg-sky-600 text-white px-5 py-3 rounded-xl text-sm font-semibold hover:bg-sky-700 transition flex gap-2 items-center"><i class="fa-solid fa-file-arrow-down"></i> Download PDF</button>
+                    </div>
+                    <p id="gymReportMessage" role="status" aria-live="polite" class="text-sm text-slate-500 mt-3">Choose a type and reporting period, then generate the report.</p>
+                </form>
+
+                <div id="gymReportPreview" class="hidden mt-7">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-5 gap-2">
+                        <div><h3 class="text-xl font-bold text-slate-900">Report Preview</h3><p id="gymReportPeriodLabel" class="text-sm text-slate-500 mt-1"></p></div>
+                        <span class="text-xs text-slate-400">PDF includes detailed records and tables.</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="gymReportKpiGrid"></div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
+                        <div id="gymReportRevenueBox" class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                            <h4 id="gymReportRevenueHeading" class="font-bold text-slate-800 mb-2">Revenue Trend</h4>
+                            <p class="text-xs text-slate-500">Paid payments only</p>
+                            <div id="gymReportRevenueChart" class="flex items-end gap-1.5 h-36 mt-5 border-b border-slate-200"></div>
+                            <p id="gymReportRevenueCaption" class="text-xs text-slate-500 mt-3"></p>
+                        </div>
+                        <div id="gymReportMembershipBox" class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                            <h4 class="font-bold text-slate-800 mb-2">Membership Status</h4>
+                            <p class="text-xs text-slate-500">Status as of the end of selected period</p>
+                            <div id="gymReportMemberBars" class="space-y-4 mt-6"></div>
+                        </div>
+                    </div>
+                    <p id="gymReportFootnote" class="text-xs text-slate-500 mt-5"></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // JWT is checked by the server, not by localStorage role alone.
+        async function apiFetch(input, options = {}) {
+            const token = localStorage.getItem('gym_token');
+            const headers = new Headers(options.headers || {});
+            if (token) headers.set('Authorization', `Bearer ${token}`);
+            const response = await fetch(input, { ...options, headers });
+            if (response.status === 401) {
+                localStorage.removeItem('gym_token');
+                localStorage.removeItem('gym_role');
+                localStorage.removeItem('gym_member_id');
+                window.location.replace('landing.html');
+                throw new Error('Your session expired. Please sign in again.');
+            }
+            return response;
+        }
+
+        // ==========================================
+        // AUTHENTICATION & LOGIN CHECK
+        // ==========================================
+        const role = localStorage.getItem('gym_role');
+
+        if (!localStorage.getItem('gym_token') || role !== 'admin') {
+            window.location.href = 'index.html';
+        }
+
+        document.getElementById('adminLogoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = 'index.html';
+        });
+
+        // UI Navigation
+        function showAdminSection(sectionId) {
+            document.querySelectorAll('.admin-page-section').forEach(sec => {
+                sec.classList.add('hidden'); sec.classList.remove('block');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+            document.getElementById(sectionId).classList.add('block');
+            if(sectionId === 'adminDashboardSection') { updateDashboardCounters(); }
+        }
+
+        // Sub-views Toggles (editMemberView ඇතුළත් කර ඇත)
+        function toggleAdminMembersView(viewId) { ['membersListView', 'addMemberView', 'renewPlanView', 'editMemberView'].forEach(id => { const el = document.getElementById(id); if(el) { el.classList.add('hidden'); el.classList.remove('block'); } }); document.getElementById(viewId).classList.remove('hidden'); document.getElementById(viewId).classList.add('block'); }
+        function toggleAdminPlansView(viewId) { ['plansListView', 'addPlanView'].forEach(id => { const el = document.getElementById(id); if(el) { el.classList.add('hidden'); el.classList.remove('block'); } }); document.getElementById(viewId).classList.remove('hidden'); document.getElementById(viewId).classList.add('block'); }
+        function toggleAdminTrainersView(viewId) { ['trainersListView', 'addTrainerView'].forEach(id => { const el = document.getElementById(id); if(el) { el.classList.add('hidden'); el.classList.remove('block'); } }); document.getElementById(viewId).classList.remove('hidden'); document.getElementById(viewId).classList.add('block'); }
+
+        // Keep the existing shift_timing database column; store an exact time range in one format.
+        let trainerRecords = [];
+
+        function trainerTimeTo24(hours, minutes, meridiem) {
+            const h = Number(hours);
+            if (h < 1 || h > 12) return null;
+            const hour24 = (h % 12) + (meridiem.toUpperCase() === 'PM' ? 12 : 0);
+            return `${String(hour24).padStart(2, '0')}:${String(minutes || '00').padStart(2, '0')}`;
+        }
+
+        function parseTrainerShift(value) {
+            const raw = String(value || '').trim().replace(/[–—]/g, '-');
+            // Older database records may contain e.g. "6 AM - 10 AM (Morning)".
+            const ampm = raw.match(/^(\d{1,2})(?::([0-5]\d))?\s*(AM|PM)\s*-\s*(\d{1,2})(?::([0-5]\d))?\s*(AM|PM)(?:\s*\([^)]*\))?$/i);
+            if (ampm) {
+                const start = trainerTimeTo24(ampm[1], ampm[2], ampm[3]);
+                const end = trainerTimeTo24(ampm[4], ampm[5], ampm[6]);
+                return start && end ? { start, end } : null;
+            }
+            const twentyFourHour = raw.match(/^([01]?\d|2[0-3]):([0-5]\d)\s*-\s*([01]?\d|2[0-3]):([0-5]\d)(?:\s*\([^)]*\))?$/);
+            if (twentyFourHour) {
+                return {
+                    start: `${twentyFourHour[1].padStart(2, '0')}:${twentyFourHour[2]}`,
+                    end: `${twentyFourHour[3].padStart(2, '0')}:${twentyFourHour[4]}`
+                };
+            }
+            return null;
+        }
+
+        function trainerTimeLabel(value) {
+            const [hours, minutes] = value.split(':').map(Number);
+            return `${hours % 12 || 12}:${String(minutes).padStart(2, '0')} ${hours >= 12 ? 'PM' : 'AM'}`;
+        }
+
+        function trainerShiftLabel(value) {
+            const times = parseTrainerShift(value);
+            if (times) return `${trainerTimeLabel(times.start)} - ${trainerTimeLabel(times.end)}`;
+            // Never invent hours for existing "Morning" / "Evening" records.
+            return value ? `Time not set (${value})` : 'Time not set';
+        }
+
+        function escapeTrainerHtml(value) {
+            return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[ch]));
+        }
+
+        function openNewTrainerForm() {
+            document.getElementById('addTrainerForm').reset();
+            document.getElementById('trainer_edit_id').value = '';
+            document.getElementById('trainerFormHeading').textContent = 'Add New Trainer';
+            document.getElementById('trainerSaveButton').textContent = 'Save Trainer';
+            document.getElementById('trainerShiftHelp').textContent = 'Set the exact start and end times. For example: 6:00 AM - 10:00 AM.';
+            toggleAdminTrainersView('addTrainerView');
+        }
+
+        function openEditTrainer(id) {
+            const trainer = trainerRecords.find(t => Number(t.id) === Number(id));
+            if (!trainer) { alert('Trainer not found. Refresh the list and try again.'); return; }
+            const form = document.getElementById('addTrainerForm');
+            form.reset();
+            document.getElementById('trainer_edit_id').value = trainer.id;
+            document.getElementById('trainer_name').value = trainer.full_name || '';
+            document.getElementById('trainer_mobile').value = trainer.mobile || '';
+            const specialization = document.getElementById('trainer_specialization');
+            if (trainer.specialization && !Array.from(specialization.options).some(opt => opt.value === trainer.specialization)) {
+                specialization.add(new Option(trainer.specialization, trainer.specialization));
+            }
+            specialization.value = trainer.specialization || 'Strength Training';
+            const times = parseTrainerShift(trainer.shift_timing);
+            document.getElementById('trainer_shift_start').value = times ? times.start : '';
+            document.getElementById('trainer_shift_end').value = times ? times.end : '';
+            document.getElementById('trainerShiftHelp').textContent = times
+                ? 'Update the shift start and end times.'
+                : 'This trainer previously had no exact shift hours. Enter the correct start and end times.';
+            document.getElementById('trainerFormHeading').textContent = 'Edit Trainer';
+            document.getElementById('trainerSaveButton').textContent = 'Update Trainer';
+            toggleAdminTrainersView('addTrainerView');
+        }
+        function toggleAdminPaymentsView(viewId) { ['paymentsListView', 'recordPaymentView'].forEach(id => { const el = document.getElementById(id); if(el) { el.classList.add('hidden'); el.classList.remove('block'); } }); document.getElementById(viewId).classList.remove('hidden'); document.getElementById(viewId).classList.add('block'); }
+        function toggleAdminAttendanceView(viewId) { ['attendanceListView', 'markAttendanceView'].forEach(id => { const el = document.getElementById(id); if(el) { el.classList.add('hidden'); el.classList.remove('block'); } }); document.getElementById(viewId).classList.remove('hidden'); document.getElementById(viewId).classList.add('block'); }
+        function toggleAdminEquipmentView(viewId) { ['equipmentListView', 'addEquipmentView'].forEach(id => { const el = document.getElementById(id); if(el) { el.classList.add('hidden'); el.classList.remove('block'); } }); document.getElementById(viewId).classList.remove('hidden'); document.getElementById(viewId).classList.add('block'); }
+        function toggleAdminWorkoutView(viewId) { ['workoutPlansListView', 'addWorkoutPlanView'].forEach(id => { const el = document.getElementById(id); if(el) { el.classList.add('hidden'); el.classList.remove('block'); } }); document.getElementById(viewId).classList.remove('hidden'); document.getElementById(viewId).classList.add('block'); }
+
+        // ==========================================
+        // FETCH DATA LOGIC
+        // ==========================================
+        async function updateDashboardCounters() {
+            try {
+                const memRes = await apiFetch('http://localhost:5000/api/members');
+                const members = await memRes.json();
+                document.getElementById('dash_total_members').innerText = members.length;
+
+                const planRes = await apiFetch('http://localhost:5000/api/plans');
+                const plans = await planRes.json();
+                document.getElementById('dash_active_plans').innerText = plans.length;
+
+                const payRes = await apiFetch('http://localhost:5000/api/payments');
+                const payments = await payRes.json();
+                const pendingCount = payments.filter(p => p.status === 'Pending').length;
+                document.getElementById('dash_pending_pays').innerText = pendingCount;
+            } catch(e) { console.error(e); }
+        }
+
+        async function fetchMembers() {
+            try {
+                const res = await apiFetch('http://localhost:5000/api/members'); const members = await res.json();
+                const tbody = document.getElementById('membersTableBody'); tbody.innerHTML = ''; 
+                if(members.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center">No members found.</td></tr>'; return; }
+                members.forEach((m, index) => {
+                    const date = new Date(m.join_date).toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'});
+                    // Edit බොත්තම openEditMember(id) function එකට ලින්ක් කර ඇත
+                    tbody.innerHTML += `
+                        <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                            <td class="p-4">${index + 1}</td>
+                            <td class="p-4">
+                                <div class="font-bold text-gray-900">${m.full_name}</div>
+                                <div class="text-xs text-gray-500 flex items-center gap-1"><i class="fa-solid fa-id-badge text-[10px]"></i> Member</div>
+                            </td>
+                            <td class="p-4"><span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs"><i class="fa-solid fa-user"></i> ${m.username}</span></td>
+                            <td class="p-4 text-gray-600"><i class="fa-solid fa-phone text-gray-400"></i> ${m.mobile}</td>
+                            <td class="p-4 text-gray-600"><i class="fa-regular fa-calendar text-gray-400"></i> ${date}</td>
+                            <td class="p-4 text-right">
+                                <button onclick="openRenewPlan(${m.id}, '${m.full_name}')" class="border border-indigo-500 text-indigo-500 px-2 py-1 rounded text-xs hover:bg-indigo-50"><i class="fa-solid fa-rotate-right"></i> Renew</button>
+                                <button onclick="openEditMember(${m.id})" class="border border-amber-500 text-amber-500 px-2 py-1 rounded text-xs hover:bg-amber-50 ml-1"><i class="fa-regular fa-pen-to-square"></i> Edit</button>
+                                <button onclick="deleteMember(${m.id})" class="border border-rose-500 text-rose-500 px-2 py-1 rounded text-xs hover:bg-rose-50 ml-1"><i class="fa-regular fa-trash-can"></i> Delete</button>
+                            </td>
+                        </tr>`;
+                });
+            } catch(e) { console.error(e); }
+        }
+
+        async function fetchPlans() {
+            try {
+                const res = await apiFetch('http://localhost:5000/api/plans'); const plans = await res.json();
+                const tbody = document.getElementById('plansTableBody'); tbody.innerHTML = ''; 
+                if(plans.length === 0) { tbody.innerHTML = '<tr><td colspan="2" class="p-4 text-center">No plans found.</td></tr>'; return; }
+                plans.forEach(p => {
+                    tbody.innerHTML += `
+                        <tr class="border-b border-gray-100">
+                            <td class="p-4 font-bold text-gray-900">${p.plan_name}</td>
+                            <td class="p-4 text-gray-600">Rs. ${parseFloat(p.fee).toFixed(2)}</td>
+                        </tr>`;
+                });
+            } catch(e) { console.error(e); }
+        }
+
+        async function fetchTrainers() {
+            try {
+                const res = await apiFetch('http://localhost:5000/api/trainers');
+                if (!res.ok) throw new Error('Unable to load trainers.');
+                trainerRecords = await res.json();
+                const tbody = document.getElementById('trainersTableBody'); tbody.innerHTML = '';
+                if(trainerRecords.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center">No trainers found.</td></tr>'; return; }
+                trainerRecords.forEach((t, index) => {
+                    const id = Number(t.id); // Prevent untrusted IDs being inserted into inline handlers.
+                    if (!Number.isSafeInteger(id) || id <= 0) return;
+                    tbody.innerHTML += `
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="p-4">${index + 1}</td>
+                            <td class="p-4">
+                                <div class="font-bold text-gray-900 flex items-center gap-1.5"><i class="fa-solid fa-user text-gray-400"></i> ${escapeTrainerHtml(t.full_name)}</div>
+                                <div class="text-xs text-gray-500 ml-4 flex items-center gap-1"><i class="fa-solid fa-id-badge text-[10px]"></i> Trainer</div>
+                            </td>
+                            <td class="p-4 text-gray-600"><i class="fa-solid fa-phone text-gray-400"></i> ${escapeTrainerHtml(t.mobile)}</td>
+                            <td class="p-4"><span class="border px-3 py-1 rounded-full text-xs text-gray-600"><i class="fa-solid fa-bullseye text-gray-400"></i> ${escapeTrainerHtml(t.specialization)}</span></td>
+                            <td class="p-4"><span class="bg-cyan-100 text-cyan-800 px-3 py-1 rounded-full text-xs font-bold"><i class="fa-regular fa-clock"></i> ${escapeTrainerHtml(trainerShiftLabel(t.shift_timing))}</span></td>
+                            <td class="p-4 text-right whitespace-nowrap">
+                                <button onclick="openEditTrainer(${id})" class="border border-blue-500 text-blue-600 px-2 py-1 rounded text-xs hover:bg-blue-50"><i class="fa-solid fa-pen"></i> Edit</button>
+                                <button onclick="deleteTrainer(${id})" class="border border-rose-500 text-rose-500 px-2 py-1 rounded text-xs hover:bg-rose-50 ml-1"><i class="fa-regular fa-trash-can"></i> Delete</button>
+                            </td>
+                        </tr>`;
+                });
+            } catch(e) { console.error(e); }
+        }
+
+        async function fetchPayments() {
+            try {
+                const res = await apiFetch('http://localhost:5000/api/payments'); const payments = await res.json();
+                const tbody = document.getElementById('paymentsTableBody'); tbody.innerHTML = ''; 
+                if(payments.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center">No payment records found.</td></tr>'; return; }
+                payments.forEach(p => {
+                    const date = new Date(p.payment_date).toLocaleDateString('en-GB');
+                    const statusColor = p.status === 'Paid' ? 'bg-[#10b981]' : 'bg-[#f43f5e]';
+                    tbody.innerHTML += `
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="p-4 font-bold text-gray-900">${p.member_name}</td>
+                            <td class="p-4 text-gray-600">${date}</td>
+                            <td class="p-4 text-gray-600">Rs. ${parseFloat(p.amount).toFixed(2)}</td>
+                            <td class="p-4 text-right"><span class="${statusColor} text-white text-[11px] font-bold px-3 py-1 rounded-full">${p.status}</span></td>
+                        </tr>`;
+                });
+            } catch(e) { console.error(e); }
+        }
+
+        async function fetchAttendance() {
+            try {
+                const res = await apiFetch('http://localhost:5000/api/attendance'); const attendance = await res.json();
+                const tbody = document.getElementById('attendanceTableBody'); tbody.innerHTML = ''; 
+                if(attendance.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center">No attendance records found.</td></tr>'; return; }
+                attendance.forEach((a, index) => {
+                    const date = new Date(a.attendance_date).toLocaleDateString('en-GB'); 
+                    tbody.innerHTML += `
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="p-4 font-semibold text-gray-600">${index + 1}</td>
+                            <td class="p-4 font-bold text-gray-900">${a.member_name}</td>
+                            <td class="p-4 text-gray-600">${date}</td>
+                            <td class="p-4 font-bold text-[#0284c7]">${a.time_in}</td>
+                        </tr>`;
+                });
+            } catch(e) { console.error(e); }
+        }
+
+        async function fetchEquipment() {
+            try {
+                const res = await apiFetch('http://localhost:5000/api/equipment'); const equipment = await res.json();
+                const tbody = document.getElementById('equipmentTableBody'); tbody.innerHTML = ''; 
+                if(equipment.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center">No equipment records found.</td></tr>'; return; }
+                equipment.forEach(e => {
+                    tbody.innerHTML += `
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="p-4 font-bold text-gray-900">${e.name}</td>
+                            <td class="p-4 text-gray-600">${e.units}</td>
+                            <td class="p-4 text-gray-600">Rs. ${parseFloat(e.price).toFixed(2)}</td>
+                            <td class="p-4 text-right"><button onclick="deleteEquipment(${e.id})" class="border border-rose-500 text-rose-500 px-2 py-1 rounded text-xs hover:bg-rose-50"><i class="fa-regular fa-trash-can"></i> Delete</button></td>
+                        </tr>`;
+                });
+            } catch(e) { console.error(e); }
+        }
+
+        async function fetchWorkoutPlans() {
+            try {
+                const res = await apiFetch('http://localhost:5000/api/workout-plans'); const plans = await res.json();
+                const tbody = document.getElementById('workoutPlansTableBody'); tbody.innerHTML = ''; 
+                if(plans.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center">No workout plans found.</td></tr>'; return; }
+                plans.forEach(w => {
+                    const sDate = new Date(w.start_date).toLocaleDateString('en-GB'); 
+                    const eDate = new Date(w.end_date).toLocaleDateString('en-GB'); 
+                    tbody.innerHTML += `
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="p-4 font-bold text-gray-900">${w.member_name}</td>
+                            <td class="p-4 font-semibold text-blue-700">${w.plan_title}</td>
+                            <td class="p-4 text-xs"><span class="bg-gray-100 px-2 py-1 rounded border text-gray-600">${sDate}</span> to <span class="bg-gray-100 px-2 py-1 rounded border text-gray-600">${eDate}</span></td>
+                            <td class="p-4 text-sm text-gray-600 max-w-xs truncate" title="${w.details}">${w.details}</td>
+                            <td class="p-4 text-right"><button onclick="deleteWorkoutPlan(${w.id})" class="border border-rose-500 text-rose-500 px-2 py-1 rounded text-xs hover:bg-rose-50"><i class="fa-regular fa-trash-can"></i> Delete</button></td>
+                        </tr>`;
+                });
+            } catch(e) { console.error(e); }
+        }
+
+        async function fetchFeedbacks() {
+            try {
+                const res = await apiFetch('http://localhost:5000/api/feedbacks'); const feedbacks = await res.json();
+                const tbody = document.getElementById('feedbackTableBody'); tbody.innerHTML = ''; 
+                if(feedbacks.length === 0) { tbody.innerHTML = '<tr><td colspan="2" class="p-4 text-center text-gray-500">No feedbacks available.</td></tr>'; return; }
+                feedbacks.forEach(f => {
+                    tbody.innerHTML += `
+                        <tr class="border-b border-gray-100">
+                            <td class="p-4 font-bold text-gray-900 w-1/4">${f.member_name}</td>
+                            <td class="p-4 text-gray-600 bg-gray-50/50 italic">"${f.message}"</td>
+                        </tr>`;
+                });
+            } catch(e) { console.error(e); }
+        }
+
+        async function populateMembersDropdowns() {
+            try {
+                const res = await apiFetch('http://localhost:5000/api/members'); const members = await res.json();
+                const payDropdown = document.getElementById('payment_member_id'); 
+                const attDropdown = document.getElementById('attendance_member_id');
+                const workDropdown = document.getElementById('workout_member_id');
+                
+                let options = '<option value="">-- Select a Member --</option>'; 
+                members.forEach(m => { options += `<option value="${m.id}">${m.full_name} (${m.username})</option>`; });
+                
+                if(payDropdown) payDropdown.innerHTML = options; 
+                if(attDropdown) attDropdown.innerHTML = options;
+                if(workDropdown) workDropdown.innerHTML = options;
+
+                const today = new Date(); 
+                const dateStr = today.toISOString().split('T')[0]; 
+                const timeStr = today.toTimeString().slice(0,5);
+                
+                if(document.getElementById('payment_date')) document.getElementById('payment_date').value = dateStr;
+                if(document.getElementById('attendance_date')) document.getElementById('attendance_date').value = dateStr;
+                if(document.getElementById('attendance_time')) document.getElementById('attendance_time').value = timeStr;
+                if(document.getElementById('workout_start_date')) document.getElementById('workout_start_date').value = dateStr;
+            } catch(e) { console.error(e); }
+        }
+
+        async function populateAddMemberOptions() {
+            try {
+                const planRes = await apiFetch('http://localhost:5000/api/plans');
+                const plans = await planRes.json();
+                const planSelect = document.getElementById('assign_plan');
+                let planOptions = '<option value="">No Plan</option>';
+                plans.forEach(p => { planOptions += `<option value="${p.id}">${p.plan_name} (Rs.${p.fee})</option>`; });
+                if(planSelect) planSelect.innerHTML = planOptions;
+
+                const trainerRes = await apiFetch('http://localhost:5000/api/trainers');
+                const trainers = await trainerRes.json();
+                const trainerSelect = document.getElementById('assign_trainer');
+                let trainerOptions = '<option value="">No Trainer</option>';
+                trainers.forEach(t => { trainerOptions += `<option value="${t.id}">${t.full_name}</option>`; });
+                if(trainerSelect) trainerSelect.innerHTML = trainerOptions;
+
+                const today = new Date().toISOString().split('T')[0];
+                if(document.getElementById('join_date')) document.getElementById('join_date').value = today;
+
+            } catch(e) { console.error(e); }
+        }
+
+        // ==========================================
+        // RENEW MEMBERSHIP LOGIC 
+        // ==========================================
+        async function openRenewPlan(id, name) {
+            document.getElementById('renewMemberNameDisplay').innerText = `Extending plan for: ${name}`;
+            document.getElementById('renew_member_id').value = id;
+            
+            try {
+                const planRes = await apiFetch('http://localhost:5000/api/plans');
+                const plans = await planRes.json();
+                let planOpts = '<option value="">-- Select Plan --</option>';
+                plans.forEach(p => planOpts += `<option value="${p.id}">${p.plan_name} (Rs.${p.fee})</option>`);
+                document.getElementById('renew_plan_id').innerHTML = planOpts;
+
+                const trRes = await apiFetch('http://localhost:5000/api/trainers');
+                const trainers = await trRes.json();
+                let trOpts = '<option value="">No Trainer</option>';
+                trainers.forEach(t => trOpts += `<option value="${t.id}">${t.full_name}</option>`);
+                document.getElementById('renew_trainer_id').innerHTML = trOpts;
+
+                document.getElementById('renew_start_date').value = new Date().toISOString().split('T')[0];
+                toggleAdminMembersView('renewPlanView');
+            } catch(e) { console.error(e); }
+        }
+
+        const renewPlanForm = document.getElementById('renewPlanForm');
+        if(renewPlanForm) renewPlanForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const memberId = document.getElementById('renew_member_id').value;
+            const data = {
+                plan_id: document.getElementById('renew_plan_id').value,
+                trainer_id: document.getElementById('renew_trainer_id').value,
+                start_date: document.getElementById('renew_start_date').value
+            };
+            try {
+                const res = await apiFetch(`http://localhost:5000/api/members/${memberId}/renew-plan`, { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify(data) 
+                });
+                if(res.ok) {
+                    alert('✅ Membership Extended Successfully!');
+                    toggleAdminMembersView('membersListView');
+                    fetchMembers();
+                } else { alert('❌ Error extending membership'); }
+            } catch(e) { console.error(e); }
+        });
+
+        // ==========================================
+        // EDIT MEMBER LOGIC (NEW)
+        // ==========================================
+        async function openEditMember(id) {
+            try {
+                const res = await apiFetch(`http://localhost:5000/api/members/${id}`);
+                if(res.ok) {
+                    const member = await res.json();
+                    document.getElementById('edit_m_id').value = member.id;
+                    document.getElementById('edit_m_full_name').value = member.full_name;
+                    document.getElementById('edit_m_mobile').value = member.mobile;
+                    document.getElementById('edit_m_age').value = member.age || '';
+                    document.getElementById('edit_m_gender').value = member.gender;
+                    document.getElementById('edit_m_address').value = member.address || '';
+                    
+                    toggleAdminMembersView('editMemberView');
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        const editMemberForm = document.getElementById('editMemberForm');
+        if(editMemberForm) editMemberForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('edit_m_id').value;
+            const data = { 
+                full_name: document.getElementById('edit_m_full_name').value, 
+                mobile: document.getElementById('edit_m_mobile').value, 
+                age: document.getElementById('edit_m_age').value || null, 
+                gender: document.getElementById('edit_m_gender').value, 
+                address: document.getElementById('edit_m_address').value 
+            };
+            
+            try {
+                const res = await apiFetch(`http://localhost:5000/api/members/${id}`, { 
+                    method: 'PUT', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(data) 
+                });
+                if(res.ok) {
+                    alert('✅ Profile Updated Successfully!');
+                    toggleAdminMembersView('membersListView');
+                    fetchMembers();
+                } else { alert('❌ Error updating profile'); }
+            } catch(e) { console.error(e); }
+        });
+
+        // ==========================================
+        // SUBMIT & DELETE FUNCTIONS
+        // ==========================================
+        async function deleteMember(id) { if(confirm("Delete Member?")) { await apiFetch(`http://localhost:5000/api/members/${id}`, {method: 'DELETE'}); fetchMembers(); updateDashboardCounters(); } }
+        async function deleteTrainer(id) { if(confirm("Delete Trainer?")) { await apiFetch(`http://localhost:5000/api/trainers/${id}`, {method: 'DELETE'}); fetchTrainers(); } }
+        async function deleteEquipment(id) { if(confirm("Delete Equipment?")) { await apiFetch(`http://localhost:5000/api/equipment/${id}`, {method: 'DELETE'}); fetchEquipment(); } }
+        async function deleteWorkoutPlan(id) { if(confirm("Delete Plan?")) { await apiFetch(`http://localhost:5000/api/workout-plans/${id}`, {method: 'DELETE'}); fetchWorkoutPlans(); } }
+
+        const addMemberForm = document.getElementById('addMemberForm');
+        if(addMemberForm) addMemberForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = { 
+                full_name: document.getElementById('full_name').value, 
+                username: document.getElementById('username').value, 
+                password: document.getElementById('password').value, 
+                mobile: document.getElementById('mobile').value, 
+                age: document.getElementById('age').value || null, 
+                gender: document.getElementById('gender').value, 
+                address: document.getElementById('address').value,
+                join_date: document.getElementById('join_date').value,
+                plan_id: document.getElementById('assign_plan').value,
+                trainer_id: document.getElementById('assign_trainer').value
+            };
+            
+            await apiFetch('http://localhost:5000/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            addMemberForm.reset(); toggleAdminMembersView('membersListView'); fetchMembers(); updateDashboardCounters();
+        });
+
+        const addPlanForm = document.getElementById('addPlanForm');
+        if(addPlanForm) addPlanForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = { plan_name: document.getElementById('plan_name').value, duration_months: document.getElementById('duration_months').value, fee: document.getElementById('fee').value };
+            await apiFetch('http://localhost:5000/api/plans', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+            addPlanForm.reset(); toggleAdminPlansView('plansListView'); fetchPlans(); updateDashboardCounters();
+        });
+
+        const addTrainerForm = document.getElementById('addTrainerForm');
+        if(addTrainerForm) addTrainerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const start = document.getElementById('trainer_shift_start').value;
+            const end = document.getElementById('trainer_shift_end').value;
+            if (!start || !end || start === end) {
+                alert('Please select different start and end times for the trainer shift.');
+                return;
+            }
+            const editId = document.getElementById('trainer_edit_id').value;
+            const data = {
+                full_name: document.getElementById('trainer_name').value.trim(),
+                mobile: document.getElementById('trainer_mobile').value.trim(),
+                specialization: document.getElementById('trainer_specialization').value,
+                shift_timing: `${trainerTimeLabel(start)} - ${trainerTimeLabel(end)}`
+            };
+            // Keep the original insert fields; editing changes only the fields above.
+            if (!editId) Object.assign(data, { gender: 'Male', age: null, salary: null });
+            const saveButton = document.getElementById('trainerSaveButton');
+            saveButton.disabled = true;
+            try {
+                const response = await apiFetch(editId ? `http://localhost:5000/api/trainers/${editId}` : 'http://localhost:5000/api/trainers', {
+                    method: editId ? 'PUT' : 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || errorData.error || `HTTP ${response.status}`);
+                }
+                addTrainerForm.reset();
+                document.getElementById('trainer_edit_id').value = '';
+                toggleAdminTrainersView('trainersListView');
+                await fetchTrainers();
+            } catch (err) {
+                console.error(err);
+                alert(`Could not save trainer: ${err.message}`);
+            } finally {
+                saveButton.disabled = false;
+            }
+        });
+
+        const addPaymentForm = document.getElementById('addPaymentForm');
+        if(addPaymentForm) addPaymentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = { member_id: document.getElementById('payment_member_id').value, amount: document.getElementById('payment_amount').value, payment_date: document.getElementById('payment_date').value, status: document.getElementById('payment_status').value };
+            await apiFetch('http://localhost:5000/api/payments', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+            addPaymentForm.reset(); toggleAdminPaymentsView('paymentsListView'); fetchPayments(); updateDashboardCounters();
+        });
+
+        const addAttendanceForm = document.getElementById('addAttendanceForm');
+        if(addAttendanceForm) addAttendanceForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = { member_id: document.getElementById('attendance_member_id').value, attendance_date: document.getElementById('attendance_date').value, time_in: document.getElementById('attendance_time').value };
+            await apiFetch('http://localhost:5000/api/attendance', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+            addAttendanceForm.reset(); toggleAdminAttendanceView('attendanceListView'); fetchAttendance();
+        });
+
+        const addEquipmentForm = document.getElementById('addEquipmentForm');
+        if(addEquipmentForm) addEquipmentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = { name: document.getElementById('eq_name').value, units: document.getElementById('eq_units').value, price: document.getElementById('eq_price').value };
+            await apiFetch('http://localhost:5000/api/equipment', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+            addEquipmentForm.reset(); toggleAdminEquipmentView('equipmentListView'); fetchEquipment();
+        });
+
+        const addWorkoutPlanForm = document.getElementById('addWorkoutPlanForm');
+        if(addWorkoutPlanForm) addWorkoutPlanForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = { member_id: document.getElementById('workout_member_id').value, plan_title: document.getElementById('workout_title').value, start_date: document.getElementById('workout_start_date').value, end_date: document.getElementById('workout_end_date').value, details: document.getElementById('workout_details').value };
+            await apiFetch('http://localhost:5000/api/workout-plans', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+            addWorkoutPlanForm.reset(); toggleAdminWorkoutView('workoutPlansListView'); fetchWorkoutPlans();
+        });
+
+        // ==========================================
+        // REPORTING: period filters, preview and PDF download
+        // ==========================================
+        function gymReportLocalDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function gymReportDateFields() {
+            const period = document.getElementById('gymReportPeriod').value;
+            document.getElementById('gymReportMonthFields').classList.toggle('hidden', period !== 'monthly');
+            document.getElementById('gymReportYearFields').classList.toggle('hidden', period !== 'yearly');
+            document.getElementById('gymReportCustomFields').classList.toggle('hidden', period !== 'custom');
+        }
+
+        function gymReportOptions() {
+            const type = document.getElementById('gymReportType').value;
+            const period = document.getElementById('gymReportPeriod').value;
+            let start, end;
+            if (period === 'monthly') {
+                const month = document.getElementById('gymReportMonth').value;
+                if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) throw new Error('Select a valid month.');
+                const [year, monthNumber] = month.split('-').map(Number);
+                start = month + '-01';
+                end = gymReportLocalDate(new Date(year, monthNumber, 0));
+            } else if (period === 'yearly') {
+                const year = Number(document.getElementById('gymReportYear').value);
+                if (!Number.isInteger(year) || year < 2000 || year > 2100) throw new Error('Select a valid year.');
+                start = `${year}-01-01`;
+                end = `${year}-12-31`;
+            } else {
+                start = document.getElementById('gymReportStart').value;
+                end = document.getElementById('gymReportEnd').value;
+            }
+            const valid = str => /^\d{4}-\d{2}-\d{2}$/.test(str) && !Number.isNaN(Date.parse(str)) && new Date(str).toISOString().slice(0, 10) === str;
+            if (!valid(start) || !valid(end)) throw new Error('Enter valid start and end dates.');
+            const days = (Date.parse(end) - Date.parse(start)) / 86400000;
+            if (days < 0) throw new Error('End date must not be before start date.');
+            if (days > 366 * 2) throw new Error('Maximum report period is two years.');
+            return {type, start, end};
+        }
+
+        function gymReportStatus(message, isError = false) {
+            const el = document.getElementById('gymReportMessage');
+            el.textContent = message;
+            el.className = `text-sm mt-3 ${isError ? 'text-red-600 font-medium' : 'text-slate-500'}`;
+        }
+        function gymReportMoney(value) {
+            return 'Rs. ' + Number(value || 0).toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+        function gymReportRenderPreview(data) {
+            const s = data.summary;
+            const type = data.meta.type;
+            document.getElementById('gymReportPeriodLabel').textContent = `${data.meta.start} to ${data.meta.end}`;
+            const options = {
+                full: [['Total Members', s.totalMembers], ['Active Members', s.activeMembers], ['Paid Revenue', gymReportMoney(s.totalRevenue)], ['Pending Payments', s.pendingPayments]],
+                financial: [['Paid Revenue', gymReportMoney(s.totalRevenue)], ['Paid Payments', s.paidPayments], ['Pending Amount', gymReportMoney(s.pendingAmount)], ['Pending Payments', s.pendingPayments]],
+                members: [['Total Members', s.totalMembers], ['Active Members', s.activeMembers], ['Expired Memberships', s.expiredMembers], ['New Registrations', s.newMembers]],
+                attendance: [['Attendance Records', s.totalAttendance], ['Unique Member-Day Visits', s.uniqueAttendance], ['Average / Day', s.averageDailyAttendance], ['Days With Attendance', s.daysWithAttendance]]
+            };
+            const grid = document.getElementById('gymReportKpiGrid');
+            grid.replaceChildren();
+            for (const [label, value] of options[type]) {
+                const card = document.createElement('div');
+                card.className = 'bg-slate-50 border border-slate-200 rounded-2xl p-5';
+                const small = document.createElement('p');
+                small.className = 'text-xs font-semibold text-slate-500 mb-2';
+                small.textContent = label;
+                const big = document.createElement('p');
+                big.className = 'text-xl lg:text-2xl font-bold text-slate-900 break-words';
+                big.textContent = value;
+                card.append(small, big);
+                grid.append(card);
+            }
+            document.getElementById('gymReportRevenueBox').classList.toggle('hidden', !['full', 'financial'].includes(type));
+            document.getElementById('gymReportMembershipBox').classList.toggle('hidden', !['full', 'members'].includes(type));
+            if (['full','financial'].includes(type)) {
+                const chart = document.getElementById('gymReportRevenueChart');
+                chart.replaceChildren();
+                const points = data.charts.revenue || [];
+                const max = Math.max(1, ...points.map(p => Number(p.revenue) || 0));
+                for (const point of points) {
+                    const bar = document.createElement('div');
+                    bar.className = 'bg-sky-500 rounded-t hover:bg-sky-600 transition min-w-[3px] flex-1';
+                    bar.style.height = `${Math.max(2, Number(point.revenue || 0) / max * 100)}%`;
+                    bar.title = `${point.key}: ${gymReportMoney(point.revenue)}`;
+                    chart.append(bar);
+                }
+                document.getElementById('gymReportRevenueHeading').textContent = `${data.meta.revenueBucket} Revenue`;
+                document.getElementById('gymReportRevenueCaption').textContent = `Highest ${data.meta.revenueBucket.toLowerCase()} total: ${gymReportMoney(max === 1 && points.every(p => !Number(p.revenue)) ? 0 : max)}. Hover on each bar to view its value.`;
+            }
+            if (['full','members'].includes(type)) {
+                const outer = document.getElementById('gymReportMemberBars');
+                outer.replaceChildren();
+                const segments = data.charts.membership || [];
+                const total = Math.max(1, segments.reduce((sum, item) => sum + Number(item.value || 0), 0));
+                const colors = ['bg-emerald-500', 'bg-rose-500', 'bg-slate-500'];
+                segments.forEach((item, idx) => {
+                    const wrapper = document.createElement('div');
+                    const label = document.createElement('div');
+                    label.className = 'text-sm text-slate-700 mb-1 flex justify-between';
+                    const name = document.createElement('span'); name.textContent = item.label;
+                    const number = document.createElement('b'); number.textContent = item.value;
+                    label.append(name, number);
+                    const track = document.createElement('div');track.className = 'h-3 rounded-full bg-slate-100 overflow-hidden';
+                    const fill = document.createElement('div');fill.className = `h-full ${colors[idx % colors.length]} rounded-full`;
+                    fill.style.width = `${Math.max(0, Number(item.value) / total * 100)}%`;
+                    track.append(fill);wrapper.append(label, track);outer.append(wrapper);
+                });
+            }
+            document.getElementById('gymReportFootnote').textContent = 'Paid revenue excludes pending payments. Trainer, equipment and available plan details in the complete PDF are current snapshots.';
+            document.getElementById('gymReportPreview').classList.remove('hidden');
+        }
+
+        async function gymReportRequestPreview(event) {
+            event.preventDefault();
+            const button = document.getElementById('gymReportPreviewBtn');
+            try {
+                const options = gymReportOptions();
+                const query = new URLSearchParams(options).toString();
+                button.disabled = true;button.classList.add('opacity-60');
+                gymReportStatus('Loading report data...');
+                const response = await apiFetch(`http://localhost:5000/api/reports/preview?${query}`);
+                const json = await response.json();
+                if (!response.ok) throw new Error(json.message || 'Could not load report preview.');
+                gymReportRenderPreview(json);
+                gymReportStatus('Preview generated successfully. Click Download PDF to save the full report.');
+            } catch (error) {gymReportStatus(error.message || 'Preview failed.', true);}
+            finally {button.disabled = false;button.classList.remove('opacity-60');}
+        }
+
+        async function gymReportDownloadPdf() {
+            const button = document.getElementById('gymReportPdfBtn');
+            try {
+                const options = gymReportOptions();
+                const query = new URLSearchParams(options).toString();
+                button.disabled=true;button.classList.add('opacity-60');
+                gymReportStatus('Preparing PDF from your database...');
+                const response = await apiFetch(`http://localhost:5000/api/reports/pdf?${query}`);
+                if (!response.ok) {
+                    const json = await response.json().catch(()=>({}));
+                    throw new Error(json.message || 'PDF export failed.');
+                }
+                const blob = await response.blob();
+                if (!blob.size || !blob.type.includes('pdf')) throw new Error('The server did not return a PDF file.');
+                const file = `MyGym_${options.type}_${options.start}_to_${options.end}.pdf`;
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');a.href=url;a.download=file;
+                document.body.append(a);a.click();a.remove();
+                setTimeout(()=>URL.revokeObjectURL(url),2000);
+                gymReportStatus(`PDF downloaded: ${file}`);
+            } catch (error) {gymReportStatus(error.message || 'PDF export failed.',true);}
+            finally {button.disabled=false;button.classList.remove('opacity-60');}
+        }
+
+        function gymReportInit() {
+            const today = new Date();
+            document.getElementById('gymReportMonth').value = gymReportLocalDate(today).slice(0,7);
+            document.getElementById('gymReportYear').value = today.getFullYear();
+            document.getElementById('gymReportStart').value = gymReportLocalDate(new Date(today.getFullYear(), today.getMonth(), 1));
+            document.getElementById('gymReportEnd').value = gymReportLocalDate(today);
+            gymReportDateFields();
+            document.getElementById('gymReportPeriod').addEventListener('change', gymReportDateFields);
+            document.getElementById('gymReportForm').addEventListener('submit', gymReportRequestPreview);
+            document.getElementById('gymReportPdfBtn').addEventListener('click', gymReportDownloadPdf);
+            document.querySelectorAll('#gymReportForm select, #gymReportForm input').forEach(el => el.addEventListener('change', () => {
+                document.getElementById('gymReportPreview').classList.add('hidden');
+                gymReportStatus('Filters changed. Generate a new preview, or download the updated PDF.');
+            }));
+        }
+
+        // INITIAL LOAD
+        document.addEventListener("DOMContentLoaded", () => {
+            gymReportInit();
+            fetchMembers();
+            fetchPlans();
+            fetchTrainers();
+            fetchPayments();
+            fetchAttendance();
+            fetchEquipment();
+            fetchWorkoutPlans();
+            fetchFeedbacks();
+            updateDashboardCounters(); 
+        });
+    </script>
+</body>
+</html>
