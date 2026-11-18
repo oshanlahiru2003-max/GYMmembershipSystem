@@ -1,0 +1,11 @@
+MY.GYM LOCAL UNIVERSITY PROJECT — DEMONSTRATION LOGIN
+This is a LOCAL, automatically created sample database (not your old MySQL data).
+URL: http://localhost:5000/landing.html
+Admin username: admin
+Admin password: 3LinbO7tmaUWl_Us
+Demo member username: member01
+Demo member password: BtIAemxAgGOAXq6w
+
+Keep these credentials private. For classroom demo use on your own computer only.
+Change admin password after setup by running CHANGE_ADMIN_PASSWORD.bat.
+Sample data is clearly marked DEMO; replace before real use.
