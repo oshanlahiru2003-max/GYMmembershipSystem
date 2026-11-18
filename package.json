@@ -1,0 +1,13 @@
+{
+  "name": "my-gym-local-university-handover",
+  "version": "2.0.0",
+  "description": "Self-contained My.Gym with embedded SQLite and PDF reports",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --check server.js && node --check local_db.js && node --check report_data.js && node --check report_pdf.js && node --test tests/*.test.js"
+  },
+  "engines": {"node": ">=24.0.0"},
+  "dependencies": {}
+}
